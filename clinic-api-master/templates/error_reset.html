@@ -1,0 +1,67 @@
+{% extends 'layouts/base-fullscreen.html' %}
+
+{% block title %} reset password {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="container sticky top-0 z-sticky">
+      <div class="flex flex-wrap -mx-3">
+        <div class="w-full max-w-full px-3 flex-0">
+
+          {% comment %} {% include "includes/navigation-sign-in.html" %}  {% endcomment %}
+
+        </div>
+      </div>
+    </div>
+
+    <main class="mt-0 transition-all duration-200 ease-soft-in-out">
+      <section>
+        <div class="relative flex items-center p-0 overflow-hidden bg-center bg-cover min-h-85-screen">
+          <div class="container z-10">
+            <div class="flex flex-wrap mt-0 -mx-3">
+              <div class="flex flex-col w-full max-w-full px-3 mx-auto md:flex-0 shrink-0 md:w-8/12 lg:w-5/12 xl:w-4/12">
+                <div class="relative flex flex-col min-w-0  break-words bg-transparent border-0 shadow-none rounded-2xl bg-clip-border">
+                  <div class="p-0 md:p-6 pb-0 mb-0 bg-transparent border-b-0 rounded-t-2xl w-full">
+                    <div class="flex "> 
+
+                      <img class="mx-auto mb-6 " src="/assets/img/wrong__.svg" height="100px" width="100px" >
+
+                    </div>
+                    <div class="flex-initial mx-auto"> 
+                        <h5 class="font-bold text-transparent uppercase bg-gradient-red bg-clip-text text-center">
+                           Password reset unsuccessful.
+                        </h5>
+                        <h6 class="font-bold  uppercase  bg-clip-text text-center"> 
+                          Please double-check your email and try again or contact support for assistance.
+                        </h6>
+                    </div>  
+                    
+                  </div>
+                  
+                </div>
+              </div>
+              <div class="w-full max-w-full px-3 lg:flex-0 shrink-0 md:w-6/12">
+                <div class="absolute top-0 hidden w-3/5 h-full -mr-32 overflow-hidden -skew-x-10 -right-40 rounded-bl-xl md:block  dark:bg-white bg-black">
+                  <div class="absolute inset-x-0 top-0 z-0 h-full -ml-16 bg-cover skew-x-10" style="background-image: url('/static/assets/img/bg_3.jpg')"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <div class=" w-2/3 mx-auto">
+      {%  include "includes/footer.html" %}
+    </div>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}{% endblock javascripts %}
+
+<script>
+  new Vivus('my-svg', {duration: 200}, myCallback);
+</script>

@@ -1,0 +1,22 @@
+services:
+  app:
+    build:
+      dockerfile: Dockerfile
+      context: .
+      target: development
+    volumes:
+      - .:/khfif-backoffice
+      - bun-cache:/usr/local/share/.config/bun/
+      - exclude:/khfif-backoffice/node_modules/
+
+    environment:
+      - NODE_ENV=development
+    env_file:
+      - .env
+    command: bun dev
+    ports:
+      - 8888:80
+
+volumes:
+  bun-cache:
+  exclude:
