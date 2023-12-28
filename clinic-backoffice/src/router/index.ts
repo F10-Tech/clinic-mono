@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { useAgentStore } from '@/stores/models/agent';
+import OrdersPage from '@/pages/orders/ordersPage.vue';
 
 const routes = [
   {
@@ -25,6 +26,32 @@ const routes = [
         path: 'edit/:id',
         name: 'services.edit',
         component: () => import('@/pages/services/servicesEdit.vue'),
+      },
+    ],
+  },
+  {
+    meta: {
+      title: 'Patients',
+      requiresAuth: true,
+    },
+    path: '/patients',
+    name: 'patients',
+    component: () => import('@/pages/patients/patientPage.vue'),
+    children: [
+      {
+        path: '',
+        name: 'services.index',
+        component: () => import('@/pages/patients/patientList.vue'),
+      },
+      {
+        path: 'new',
+        name: 'services.new',
+        component: () => import('@/pages/patients/patientNew.vue'),
+      },
+      {
+        path: 'edit/:id',
+        name: 'services.edit',
+        component: () => import('@/pages/patients/patientEdit.vue'),
       },
     ],
   },
@@ -59,7 +86,9 @@ const routes = [
     },
     path: '/orders',
     name: 'orders',
-    component: () => import('@/pages/orders/OrdersPage.vue'),
+    // ...
+
+      component: OrdersPage,
     children: [
       {
         path: '',

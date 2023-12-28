@@ -14,12 +14,12 @@ export const useAgentStore = defineStore('agent', {
     timeToKill: 2000,
   }),
   actions: {
-    async login(phone: string, password: string): Promise<Boolean> {
+    async login(username: string, password: string): Promise<Boolean> {
       let tokens: { access: string; refresh: string };
       try {
         const { data, status } = await axios.post(
           apiUrl + '/auth/jwt/create/',
-          { phone, password },
+          { username, password },
           { headers: { 'Content-Type': 'application/json' } },
         );
 

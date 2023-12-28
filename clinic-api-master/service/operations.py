@@ -16,7 +16,7 @@ def get(request, Serializer, Object, pk, *args, **kwargs):
         if request.user.is_staff:
             serializer = Serializer(Object, many=True)
         else:
-            list = Object.objects.filter(is_active = True)
+            list = Object
             serializer = Serializer(list, many=True)
 
     return Response(serializer.data)

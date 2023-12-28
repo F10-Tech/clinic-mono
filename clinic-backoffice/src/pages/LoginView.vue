@@ -48,7 +48,7 @@ const submit = async () => {
       <SectionFullScreen v-slot="{ cardClass }" bg="purplePink">
         <CardBox :class="cardClass" is-form @submit.prevent="submit">
           <div v-if="errorMessage" class="text-red-500 mb-4">{{ errorMessage }}</div>
-          <FormField label="Login" help="Please enter your login">
+          <FormField label="Username" help="Please enter your username">
             <FormControl
               v-model="form.login"
               :icon="mdiAccount"

@@ -18,7 +18,7 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False)
 
 
-ALLOWED_HOSTS = ['127.0.0.1', 'F10Tech.pythonanywhere.com']
+ALLOWED_HOSTS = ['localhost', 'F10Tech.pythonanywhere.com', '127.0.0.1']
 
 # Application definition
 
@@ -38,7 +38,18 @@ INSTALLED_APPS = [
     'core',
     'order',
     'django_cleanup.apps.CleanupConfig',
+    'patient',
 ]
+
+JAZZMIN_SETTINGS = {
+    # title of the window (Will default to current_admin_site.site_title if absent or None)
+    "site_title": "Centre Souf",
+
+    "site_header": "Library",
+
+    "site_brand": "Centre Souf",
+
+}
 
 REST_FRAMEWORK = {
 

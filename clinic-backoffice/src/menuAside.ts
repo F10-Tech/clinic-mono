@@ -13,6 +13,11 @@ export default [
     icon: mdiClipboardListOutline,
   },
   {
+    to: '/patients',
+    label: 'Patients',
+    icon: mdiClipboardListOutline,
+  },
+  {
     to: '/subservices',
     label: 'Subservices',
     icon: mdiClipboardTextMultipleOutline,
