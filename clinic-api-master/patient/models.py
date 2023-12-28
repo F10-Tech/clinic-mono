@@ -22,7 +22,7 @@ class Patient(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        return  self.name + self.phone + ' ' + self.address
+        return  self.name + ' ' + self.phone 
 
 
 class Regiment(models.Model):

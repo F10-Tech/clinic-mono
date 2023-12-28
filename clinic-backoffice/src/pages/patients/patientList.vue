@@ -2,16 +2,16 @@
 import { mdiCartOutline, mdiMagnify } from '@mdi/js';
 import { onBeforeMount, ref, onUnmounted } from 'vue';
 
-import { useOrderStore } from '@/stores/models/orders';
+import { usePatientsStore } from '@/stores/models/patients';
 import SectionMain from '@/vendor/Section/SectionMain.vue';
-import TableOrders from '@/components/Tables/TableOrders.vue';
+import TablePatients from '@/components/Tables/TablePatients.vue';
 import CardBox from '@/vendor/CardBox/CardBox.vue';
 import SectionTitleLineWithButton from '@/vendor/Section/SectionTitleLineWithButton.vue';
 import BaseButtons from '@/vendor/Base/BaseButtons.vue';
 import BaseButton from '@/vendor/Base/BaseButton.vue';
 import FormControl from '@/vendor/Form/FormControl.vue';
 
-const store = useOrderStore();
+const store = usePatientsStore();
 
 let searching = ref(false);
 const isLoading = ref(false);
@@ -21,12 +21,14 @@ const reset = () => {
 };
 
 const search = () => {
-  store.localSearch('id');
+  store.localSearch('name');
 };
 
 onBeforeMount(async () => {
   isLoading.value = true; // Set loading to true while fetching data
   await store.fetchAll();
+  console.log(store.all);
+
   isLoading.value = false; // Set loading to false after the data has loaded
 });
 
@@ -45,10 +47,10 @@ const stopSearching = () => {
 
 <template>
   <SectionMain>
-    <SectionTitleLineWithButton :icon="mdiCartOutline" title="Orders" main>
+    <SectionTitleLineWithButton :icon="mdiCartOutline" title="المرضى" main>
       <BaseButtons type="justify-start lg:justify-end" no-wrap>
         <BaseButton
-          label="Create Order"
+          label="إضافة مريض"
           color="contrast"
           to="/orders/new"
           class="font-medium mr-2"
@@ -75,7 +77,7 @@ const stopSearching = () => {
     />
 
     <CardBox class="mb-6" has-table>
-      <TableOrders :orders="store.filteredList" :loading="isLoading" />
+      <TablePatients :patients="store.filteredList" :loading="isLoading" />
     </CardBox>
   </SectionMain>
 </template>

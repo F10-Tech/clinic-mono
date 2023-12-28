@@ -5,18 +5,49 @@ from .models import *
 
 class PatientSerializer(serializers.ModelSerializer):
 
+    status = serializers.SerializerMethodField('get_state_data')
     city = serializers.SerializerMethodField('get_city_data')
     regiment = serializers.SerializerMethodField('get_regiment_data')
+    disease = serializers.SerializerMethodField('get_disease_data')
+    other_diseases = serializers.SerializerMethodField('get_other_diseases_data')
+
+    def get_state_data(self, obj):
+        if obj.number_of_days == 0:
+            obj.regiment = None
+            obj.save()
+            return "CANCELLED"
+        elif obj.number_of_days < 4 and obj.number_of_days > 0:
+            return "IN_PROGRESS"
+        else:
+            return "COMPLETED"
+
+    def get_other_diseases_data(self, obj):
+        if obj.other_diseases != None:
+            other_diseases = Disease.objects.filter(other_diseases=obj.id)
+            serializer = DiseaseSerializer(other_diseases, many=True)
+            return serializer.data
+        return None
+
+    def get_disease_data(self, obj):
+        if obj.disease != None:
+            disease = Disease.objects.get(id=obj.disease.id)
+            serializer = DiseaseSerializer(disease, many=False)
+            return serializer.data
+        return None
 
     def get_regiment_data(self, obj):
-        regiment = Regiment.objects.get(id=obj.regiment.id)
-        serializer = RegimentSerializer(regiment, many=False)
-        return serializer.data
+        if obj.regiment != None:
+            regiment = Regiment.objects.get(id=obj.regiment.id)
+            serializer = RegimentSerializer(regiment, many=False)
+            return serializer.data
+        return None
 
     def get_city_data(self, obj):
-        city = City.objects.get(id=obj.city.id)
-        serializer = FullCitySerializer(city, many=False)
-        return serializer.data
+        if obj.city != None:
+            city = City.objects.get(id=obj.city.id)
+            serializer = FullCitySerializer(city, many=False)
+            return serializer.data
+        return None
     
     class Meta:
         model = Patient
