@@ -12,7 +12,7 @@ import PillTagOrderStatus from '@/components/PillTag/PillTagOrderStatus.vue';
 
 function formatDate(value) {
   if (value) {
-    return format(new Date(value), 'dd/MM/yyyy HH:mm ');
+    return format(new Date(value), 'yyyy-MM-dd');
   }
 }
 const props = defineProps({
@@ -72,8 +72,8 @@ const pagesList = computed(() => {
           <th class="text-center">الفوج</th>
           <th class="text-center">الطبيب</th>
           <th class="text-center">المرض</th>
-          <th class="text-center">أمراض أخرى</th>
-          <th class="text-center">الحصص</th>
+          <th class="text-center">تاريخ إجراء العملية</th>
+          <th class="text-center">الحصص المتبقية</th>
           <th class="text-center">الحالة</th>
           <th />
         </tr>
@@ -89,27 +89,25 @@ const pagesList = computed(() => {
           <td data-label="Phone">
             {{ patient.city?.state?.name }} - {{ patient.city?.name }} 
           </td>
-          <td data-label="Regiment" :class="{ 'rtl-text': isArabic(patient.regiment?.name) }">
-            <h2 class="font-bold">
+          <td data-label="الفوج" :class="{ 'rtl-text': isArabic(patient.regiment?.name) }">
+            <h2 class=" text-xl">
               {{ patient.regiment?.name }}
             </h2>
           </td>
-          <td data-label="Doctor">
-            <h2 class="font-bold">
+          <td data-label="الطبيب" :class="{ 'rtl-text': isArabic(patient.regiment?.name) }">
+            <h2 class=" text-xl">
               {{ patient.doctor }}
             </h2>
           </td>
-          <td data-label="disease">
+          <td data-label="المرض">
             <h2 class="capitalize">
               {{ patient.disease?.name }}
             </h2>
           </td>
-          <td data-label="Name" class="font-bold text-xl text-center flex" >
-            <div v-for="disease in patient.other_diseases" :key="disease.id" class=" mr-1">
-                {{ disease.name }}
-            </div>
+          <td data-label="تاريخ إجراء العملية" class=" text-xl text-center flex" >
+            {{formatDate(patient.medical_operation_date)}}
           </td>
-          <td data-label="Name" class="text-center font-bold text-xl">
+          <td data-label="الحصص المتبقية" class="text-center text-xl">
             {{ patient.number_of_days }}
           </td>
           <td class="justify-center items-center flex">
@@ -119,7 +117,7 @@ const pagesList = computed(() => {
 
           <td class="before:hidden lg:w-1 whitespace-nowrap">
             <BaseButtons type="justify-start lg:justify-end" no-wrap>
-              <BaseButton :icon="mdiTextBoxEditOutline" small :to="'/orders/edit/' + patient.id" />
+              <BaseButton :icon="mdiTextBoxEditOutline" small :to="'/patients/edit/' + patient.id" />
             </BaseButtons>
           </td>
         </tr>

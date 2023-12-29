@@ -2,7 +2,7 @@
 import { mdiCartOutline, mdiMagnify } from '@mdi/js';
 import { onBeforeMount, ref, onUnmounted } from 'vue';
 
-import { usePatientsStore } from '@/stores/models/patients';
+import { usePatientsStore, useDiseasesStore } from '@/stores/models';
 import SectionMain from '@/vendor/Section/SectionMain.vue';
 import TablePatients from '@/components/Tables/TablePatients.vue';
 import CardBox from '@/vendor/CardBox/CardBox.vue';
@@ -12,6 +12,7 @@ import BaseButton from '@/vendor/Base/BaseButton.vue';
 import FormControl from '@/vendor/Form/FormControl.vue';
 
 const store = usePatientsStore();
+const diseaseStore = useDiseasesStore();
 
 let searching = ref(false);
 const isLoading = ref(false);
@@ -27,7 +28,7 @@ const search = () => {
 onBeforeMount(async () => {
   isLoading.value = true; // Set loading to true while fetching data
   await store.fetchAll();
-  console.log(store.all);
+  await diseaseStore.fetchAll();
 
   isLoading.value = false; // Set loading to false after the data has loaded
 });

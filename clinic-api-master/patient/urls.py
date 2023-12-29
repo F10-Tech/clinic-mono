@@ -6,7 +6,8 @@ urlpatterns = [
 
     path('create', views.CreatePatient),
     path('delete/<str:pk>', views.DeletePatient),
-    path('update/<str:pk>/', views.UpdatePatient),
+    path('update/<str:pk>', views.UpdatePatient),
+    path('<str:pk>/uploadImage', views.UpdateImgs),
 
     path('<str:pk>', views.DetailPatient),
     path('regiment/', views.ListOfPatientByRegiment),

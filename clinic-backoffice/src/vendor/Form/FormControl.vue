@@ -132,6 +132,7 @@ if (props.ctrlKFocus) {
       v-model="computedValue"
       :label="label"
       :class="inputElClass"
+      class="pr-10"
     >
       <option v-for="option in options" :key="option.value ?? option" :value="option.value">
         {{ option.label ?? option }}

@@ -13,8 +13,11 @@ export class Patient {
     age!: number;
     phone!: string;
     disease!: PatientDisease;
-    other_diseases!: PatientDisease[];
+    other_diseases!: string[];
     status!: string;
+    presence!: PatientPresence[];
+    img_1!: string;
+    img_2!: string;
   
     constructor(data: Partial<Patient>) {
       Object.assign(this, data);
@@ -23,6 +26,25 @@ export class Patient {
 export class PatientDisease {
   id?: string;
   name?: string;
+
+  constructor(data: Partial<PatientDisease>) {
+    Object.assign(this, data);
+  }
+}
+
+// export class OtherDiseases {
+//   id?: string;
+
+//   constructor(data: Partial<OtherDiseases>) {
+//     Object.assign(this, data);
+//   }
+// }
+
+
+export class PatientPresence {
+  day?: string;
+  created_at?: Date;
+  id?: string;
 
   constructor(data: Partial<PatientDisease>) {
     Object.assign(this, data);

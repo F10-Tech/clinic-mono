@@ -17,6 +17,8 @@ class Patient(models.Model):
     id = ShortUUIDField(primary_key=True, length=11, max_length=11,blank=False, editable=False)
     disease = models.ForeignKey("Disease", on_delete=models.CASCADE, blank=True, null=True)
     other_diseases = models.ManyToManyField("Disease", blank=True, related_name="other_diseases")
+    img_1 = models.FileField(upload_to='images/',default='images/subservice/default.svg', blank=True, null=True)
+    img_2 = models.FileField(upload_to='images/',default='images/subservice/default.svg', blank=True, null=True)
 
     class Meta:
         ordering = ['-created_at']

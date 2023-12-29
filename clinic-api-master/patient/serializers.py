@@ -9,7 +9,8 @@ class PatientSerializer(serializers.ModelSerializer):
     city = serializers.SerializerMethodField('get_city_data')
     regiment = serializers.SerializerMethodField('get_regiment_data')
     disease = serializers.SerializerMethodField('get_disease_data')
-    other_diseases = serializers.SerializerMethodField('get_other_diseases_data')
+    # other_diseases = serializers.SerializerMethodField('get_other_diseases_data')
+    presence = serializers.SerializerMethodField('get_presence_data')
 
     def get_state_data(self, obj):
         if obj.number_of_days == 0:
@@ -20,13 +21,6 @@ class PatientSerializer(serializers.ModelSerializer):
             return "IN_PROGRESS"
         else:
             return "COMPLETED"
-
-    def get_other_diseases_data(self, obj):
-        if obj.other_diseases != None:
-            other_diseases = Disease.objects.filter(other_diseases=obj.id)
-            serializer = DiseaseSerializer(other_diseases, many=True)
-            return serializer.data
-        return None
 
     def get_disease_data(self, obj):
         if obj.disease != None:
@@ -48,36 +42,15 @@ class PatientSerializer(serializers.ModelSerializer):
             serializer = FullCitySerializer(city, many=False)
             return serializer.data
         return None
-    
-    class Meta:
-        model = Patient
-        fields = '__all__'
-
-class DetailPatientSerializer(serializers.ModelSerializer):
-
-    city = serializers.SerializerMethodField('get_city_data')
-    regiment = serializers.SerializerMethodField('get_regiment_data')
-
-    def get_regiment_data(self, obj):
-        regiment = Regiment.objects.get(id=obj.regiment.id)
-        serializer = RegimentSerializer(regiment, many=False)
-        return serializer.data
-
-    def get_city_data(self, obj):
-        city = City.objects.get(id=obj.city.id)
-        serializer = FullCitySerializer(city, many=False)
-        return serializer.data
-    
-    presence = serializers.SerializerMethodField('get_presence_data')
 
     def get_presence_data(self, obj):
         presence = Presence.objects.filter(patient=obj.id)
         serializer = DatePresenceSerializer(presence, many=True)
         return serializer.data
-
+    
     class Meta:
         model = Patient
-        fields = ['id','name', 'age', 'phone', 'medical_operation_date', 'doctor', 'number_of_days', 'regiment', 'presence', 'disease', 'other_diseases', 'city']
+        fields = '__all__'
 
 class FullCitySerializer(serializers.ModelSerializer):
 
@@ -104,6 +77,11 @@ class UpdatePatientSerializer(serializers.ModelSerializer):
         model = Patient
         fields = ['name', 'age', 'phone', 'medical_operation_date', 'doctor', 'number_of_days', 'regiment', 'disease', 'other_diseases', 'city']
 
+class UpdateImgsSerializer(serializers.ModelSerializer):
+    
+        class Meta:
+            model = Patient
+            fields = ['img_1','img_2']
 
 class PresenceSerializer(serializers.ModelSerializer):
     patient = serializers.SerializerMethodField('get_patient_data')
@@ -123,11 +101,14 @@ class PresenceSerializer(serializers.ModelSerializer):
         fields = ['patient', 'created_at']
 
 class DatePresenceSerializer(serializers.ModelSerializer):
-    
+    day = serializers.SerializerMethodField('get_day_data')
+
+    def get_day_data(self, obj):
+        return obj.created_at.today().strftime("%A")
     
     class Meta:
         model = Presence
-        fields = ['created_at']
+        fields = ['day','created_at' ,'id']
 
 class CreatePresenceSerializer(serializers.ModelSerializer):
 

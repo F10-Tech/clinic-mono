@@ -14,7 +14,7 @@ export default [
   },
   {
     to: '/patients',
-    label: 'Patients',
+    label: 'المرضى',
     icon: mdiClipboardListOutline,
   },
   {

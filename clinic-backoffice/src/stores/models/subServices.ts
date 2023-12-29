@@ -18,6 +18,7 @@ export const useSubServicesStore = defineStore('subServices', {
     filterQuery: '',
     selectedId: undefined,
     editedId: undefined,
+    diseases: [],
   }),
 
   actions: {
