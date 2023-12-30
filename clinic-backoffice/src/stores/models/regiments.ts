@@ -1,16 +1,16 @@
 import { defineStore } from 'pinia';
-import { useOrdersApi } from '../../api/orders';
+import { useRegimentsApi } from '../../api/regiment';
 import { useAgentStore } from './agent';
 import { convertToDict, type baseType } from './_helpers';
 import { apiUrl } from '../../main';
-import type { Order } from '../../models';
+import type { Regiment } from '../../models';
 
 const agentStore = useAgentStore();
-const { ordersApi: api } = useOrdersApi();
-type SearchByType = 'id' | 'phone';
+const { regimentsApi: api } = useRegimentsApi();
+type SearchByType = 'name' | 'phone';
 
-export const useOrderStore = defineStore('orders', {
-  state: (): baseType<Order> => ({
+export const useRegimentStore = defineStore('regiment', {
+  state: (): baseType<Regiment> => ({
     all: {},
     order: [],
     filteredIds: [],
@@ -25,23 +25,24 @@ export const useOrderStore = defineStore('orders', {
         const { data } = await api.all();
         const { all, order } = convertToDict(data);
         this.all = all;
+
         this.order = order;
       } catch (error: any) {
         return false;
       }
       return true;
     },
-    async fetchOne(id: string): Promise<Boolean> {
-      try {
-        const axios = await api.raw();
-        const { data } = await axios.get(apiUrl + '/order/one/' + id);
-        return data;
-      } catch (error: any) {
-        const message = error.response.data.message;
-        return false;
-      }
-    },
-    async create(one: Partial<Order>): Promise<Boolean> {
+    // async fetchOne(id: string): Promise<Boolean> {
+    //   try {
+    //     const axios = await api.raw();
+    //     const { data } = await axios.get(apiUrl + '/order/one/' + id);
+    //     return data;
+    //   } catch (error: any) {
+    //     const message = error.response.data.message;
+    //     return false;
+    //   }
+    // },
+    async create(one: Partial<Regiment>): Promise<Boolean> {
       try {
         const axios = await api.raw();
         const { data } = await axios.post(apiUrl + '/order/', one, {
@@ -55,7 +56,7 @@ export const useOrderStore = defineStore('orders', {
       }
       return true;
     },
-    async patch(id: string, one: Partial<Order>): Promise<Boolean> {
+    async patch(id: string, one: Partial<Regiment>): Promise<Boolean> {
       try {
         const axios = await api.raw();
         const { data } = await axios.put(apiUrl + '/order/' + id + '/', one, {
@@ -86,7 +87,7 @@ export const useOrderStore = defineStore('orders', {
     },
     localSearch(searchBy: SearchByType) {
       try {
-        const results: Order[] = [];
+        const results: Regiment[] = [];
         const objects = Object.values(this.all);
         if (this.filterQuery != '') {
           for (const object of objects) {
@@ -107,21 +108,20 @@ export const useOrderStore = defineStore('orders', {
   },
 
   getters: {
-    selected(state): Order | undefined {
+    selected(state): Regiment | undefined {
       return state.selectedId ? state.all[state.selectedId] : undefined;
     },
 
-    edited(state): Order | undefined {
+    edited(state): Regiment | undefined {
       return state.editedId ? state.all[state.editedId] : undefined;
     },
 
-    list(state): Order[] {
+    list(state): Regiment[] {
       return state.order.map((id) => state.all[id]);
     },
 
-    filteredList(state): Order[] {
+    filteredList(state): Regiment[] {
       if (state.filterQuery != '') return state.filteredIds.map((id) => state.all[id]);
-
       return this.list;
     },
   },

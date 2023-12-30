@@ -1,16 +1,16 @@
 import { defineStore } from 'pinia';
-import { usePatientsApi } from '../../api/patients';
+import { useCitiesApi } from '../../api/cities';
 import { useAgentStore } from './agent';
 import { convertToDict, type baseType } from './_helpers';
 import { apiUrl } from '../../main';
-import type { Patient } from '../../models';
+import type { City } from '../../models';
 
 const agentStore = useAgentStore();
-const { patientsApi: api } = usePatientsApi();
-type SearchByType = 'name' | 'phone';
+const { citiesApi: api } = useCitiesApi();
+type SearchByType = 'state.id';
 
-export const usePatientsStore = defineStore('patients', {
-  state: (): baseType<Patient> => ({
+export const useCityStore = defineStore('city', {
+  state: (): baseType<City> => ({
     all: {},
     order: [],
     filteredIds: [],
@@ -32,17 +32,17 @@ export const usePatientsStore = defineStore('patients', {
       }
       return true;
     },
-    async fetchOne(id: string): Promise<Boolean> {
-      try {
-        const axios = await api.raw();
-        const { data } = await axios.get(apiUrl + '/order/one/' + id);
-        return data;
-      } catch (error: any) {
-        const message = error.response.data.message;
-        return false;
-      }
-    },
-    async create(one: Partial<Patient>): Promise<Boolean> {
+    // async fetchOne(id: string): Promise<Boolean> {
+    //   try {
+    //     const axios = await api.raw();
+    //     const { data } = await axios.get(apiUrl + '/order/one/' + id);
+    //     return data;
+    //   } catch (error: any) {
+    //     const message = error.response.data.message;
+    //     return false;
+    //   }
+    // },
+    async create(one: Partial<City>): Promise<Boolean> {
       try {
         const axios = await api.raw();
         const { data } = await axios.post(apiUrl + '/order/', one, {
@@ -56,51 +56,17 @@ export const usePatientsStore = defineStore('patients', {
       }
       return true;
     },
-    async patch(id: string, one: Partial<Patient>,
-      img_1: File | null = null,
-      img_2: File | null = null,): Promise<Boolean> {
-      try {
-        if (one) {
-          const axios = await api.raw();
-          const { data } = await axios.patch(apiUrl + '/patient/'+ id +'/update' , one, {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-              Authorization: `JWT ${agentStore.accessToken}`,
-            },
-          });
-        }
-        if (img_1) {
-          console.log(img_1);
-          const formData = new FormData();
-          formData.append('img_1', img_1);
-          await this.uploadImage(id, formData);
-        }
-        if (img_2) {
-          const formData = new FormData();
-          formData.append('img_2', img_2);
-          await this.uploadImage(id, formData);
-        }
-        
-        return true;
-      } catch (error: any) {
-        return false;
-      }
-    },
-    async uploadImage(id: string, formData: FormData): Promise<Boolean> {
+    async patch(id: string, one: Partial<City>): Promise<Boolean> {
       try {
         const axios = await api.raw();
-        const { data } = await axios.post(apiUrl + '/patient/' + id + '/uploadImage', formData, {
+        const { data } = await axios.put(apiUrl + '/order/' + id + '/', one, {
           headers: {
             'Content-Type': 'multipart/form-data',
             Authorization: `JWT ${agentStore.accessToken}`,
           },
         });
-        if (data) {
-          return true;
-        }
-        return false;
+        return true;
       } catch (error: any) {
-        const message = error.response.data.message;
         return false;
       }
     },
@@ -121,7 +87,7 @@ export const usePatientsStore = defineStore('patients', {
     },
     localSearch(searchBy: SearchByType) {
       try {
-        const results: Patient[] = [];
+        const results: City[] = [];
         const objects = Object.values(this.all);
         if (this.filterQuery != '') {
           for (const object of objects) {
@@ -142,19 +108,19 @@ export const usePatientsStore = defineStore('patients', {
   },
 
   getters: {
-    selected(state): Patient | undefined {
+    selected(state): City | undefined {
       return state.selectedId ? state.all[state.selectedId] : undefined;
     },
 
-    edited(state): Patient | undefined {
+    edited(state): City | undefined {
       return state.editedId ? state.all[state.editedId] : undefined;
     },
 
-    list(state): Patient[] {
+    list(state): City[] {
       return state.order.map((id) => state.all[id]);
     },
 
-    filteredList(state): Patient[] {
+    filteredList(state): City[] {
       if (state.filterQuery != '') return state.filteredIds.map((id) => state.all[id]);
       return this.list;
     },
