@@ -62,7 +62,7 @@ const pagesList = computed(() => {
   <div v-if="isLoading" class="flex justify-center items-center h-screen">
     <looping-rhombuses-spinner :animation-duration="1500" :rhombus-size="20" color="#fff" />
   </div>
-  <div v-else>
+  <div  v-else>
     <table>
       <thead>
         <tr>
@@ -72,45 +72,45 @@ const pagesList = computed(() => {
           <th class="text-center">الفوج</th>
           <th class="text-center">الطبيب</th>
           <th class="text-center">المرض</th>
-          <th class="text-center">تاريخ إجراء العملية</th>
-          <th class="text-center">الحصص المتبقية</th>
+          <th class="text-center">تاريخ العملية</th>
+          <th class="text-center">الحصص</th>
           <th class="text-center">الحالة</th>
           <th />
         </tr>
       </thead>
       <tbody>
         <tr v-for="patient in patients" :key="patient.id">
-          <td data-label="Id" class="font-bold text-lg">
+          <td data-label="الهاتف" class="">
             {{ patient.phone }}
           </td>
-          <td data-label="Name" :class="{ 'rtl-text': isArabic(patient.name) }">
+          <td data-label="الأسم" :class="{ 'rtl-text': isArabic(patient.name) }">
             {{ patient.name }}
           </td>
-          <td data-label="Phone">
-            {{ patient.city?.state?.name }} - {{ patient.city?.name }} 
+          <td data-label="العنوان">
+            {{ patient.city?.state }} - {{ patient.city?.name }} 
           </td>
           <td data-label="الفوج" :class="{ 'rtl-text': isArabic(patient.regiment?.name) }">
-            <h2 class=" text-xl">
+            <h2 class=" ">
               {{ patient.regiment?.name }}
             </h2>
           </td>
-          <td data-label="الطبيب" :class="{ 'rtl-text': isArabic(patient.regiment?.name) }">
-            <h2 class=" text-xl">
+          <td data-label="الطبيب" :class="{ 'rtl-text': isArabic(patient.doctor) }">
+            <h2 class="">
               {{ patient.doctor }}
             </h2>
           </td>
-          <td data-label="المرض">
-            <h2 class="capitalize">
+          <td data-label="المرض" :class="{ 'rtl-text': isArabic(patient.disease?.name) }">
+            <h2>
               {{ patient.disease?.name }}
             </h2>
           </td>
-          <td data-label="تاريخ إجراء العملية" class=" text-xl text-center flex" >
+          <td data-label="تاريخ إجراء العملية" class=" text-center " >
             {{formatDate(patient.medical_operation_date)}}
           </td>
           <td data-label="الحصص المتبقية" class="text-center text-xl">
             {{ patient.number_of_days }}
           </td>
-          <td class="justify-center items-center flex">
+          <td data-label="الحالة" class="lg:justify-center items-center flex">
             <!-- working on it -->
             <PillTagOrderStatus :color="patient.status" :label="patient.status" />
           </td>
