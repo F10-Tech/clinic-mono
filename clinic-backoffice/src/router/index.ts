@@ -57,6 +57,32 @@ const routes = [
   },
   {
     meta: {
+      title: 'Diseases',
+      requiresAuth: true,
+    },
+    path: '/diseases',
+    name: 'diseases',
+    component: () => import('@/pages/diseases/diseasePage.vue'),
+    children: [
+      {
+        path: '',
+        name: 'diseases.index',
+        component: () => import('@/pages/diseases/diseaseList.vue'),
+      },
+      {
+        path: 'new',
+        name: 'diseases.new',
+        component: () => import('@/pages/diseases/diseaseNew.vue'),
+      },
+      {
+        path: 'edit/:id',
+        name: 'diseases.edit',
+        component: () => import('@/pages/diseases/diseaseEdit.vue'),
+      },
+    ],
+  },
+  {
+    meta: {
       title: 'Sub Services',
     },
     path: '/subservices',

@@ -7,7 +7,7 @@ import type { Disease } from '../../models';
 
 const agentStore = useAgentStore();
 const { diseasesApi: api } = useDiseasesApi();
-type SearchByType = 'name' | 'phone';
+type SearchByType = 'name';
 
 export const useDiseasesStore = defineStore('disease', {
   state: (): baseType<Disease> => ({
@@ -32,53 +32,20 @@ export const useDiseasesStore = defineStore('disease', {
       }
       return true;
     },
-    async fetchOne(id: string): Promise<Boolean> {
+    async create(
+      one: Disease,
+    ): Promise<Boolean> {
       try {
-        const axios = await api.raw();
-        const { data } = await axios.get(apiUrl + '/order/one/' + id);
-        return data;
-      } catch (error: any) {
-        const message = error.response.data.message;
-        return false;
-      }
-    },
-    async create(one: Partial<Disease>): Promise<Boolean> {
-      try {
-        const axios = await api.raw();
-        const { data } = await axios.post(apiUrl + '/order/', one, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `JWT ${agentStore.accessToken}`,
-          },
-        });
+        const { data } = await api.post(one);
+        return true;
       } catch (error: any) {
         return false;
       }
       return true;
     },
-    async patch(id: string, one: Partial<Disease>): Promise<Boolean> {
+    async delete(id: string): Promise<boolean> {
       try {
-        const axios = await api.raw();
-        const { data } = await axios.put(apiUrl + '/order/' + id + '/', one, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `JWT ${agentStore.accessToken}`,
-          },
-        });
-        return true;
-      } catch (error: any) {
-        return false;
-      }
-    },
-    async deleteOrder(id: string): Promise<boolean> {
-      try {
-        const axios = await api.raw();
-        await axios.delete(apiUrl + '/order/' + id + '/', {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `JWT ${agentStore.accessToken}`,
-          },
-        });
+        await api.delete(id);
         return true;
       } catch (error: any) {
         const message = error.response.data.message;

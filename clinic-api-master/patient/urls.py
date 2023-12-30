@@ -19,7 +19,7 @@ urlpatterns = [
     # disease/
     path('disease/', views.ListOfDisease),
     path('disease/create', views.CreateDisease),
-    path('disease/delete/<str:pk>', views.DeleteDisease),
+    path('disease/<str:pk>/delete', views.DeleteDisease),
 
     # city/
     path('city/', views.ListOfCity),
@@ -29,7 +29,7 @@ urlpatterns = [
     # state/
     path('state/', views.ListOfState),
     path('state/create', views.CreateState),
-    path('state/delete/<str:pk>', views.DeleteState),
+    path('state/<str:pk>/delete', views.DeleteState),
 
     # regiment/
     path('regiment/', views.ListOfRegiment),
