@@ -1,21 +1,18 @@
 <script setup lang="ts">
 import { mdiCartOutline, mdiMagnify } from '@mdi/js';
 import { onBeforeMount, ref, onUnmounted } from 'vue';
-
-import { usePatientsStore, useDiseasesStore, useRegimentStore, useStateStore, useCityStore } from '@/stores/models';
+import { useAgentStore, useDiseasesStore } from '@/stores/models';
 import SectionMain from '@/vendor/Section/SectionMain.vue';
-import TablePatients from '@/components/Tables/TablePatients.vue';
+import TableDiseases from '@/components/Tables/TableDiseases.vue';
 import CardBox from '@/vendor/CardBox/CardBox.vue';
 import SectionTitleLineWithButton from '@/vendor/Section/SectionTitleLineWithButton.vue';
 import BaseButtons from '@/vendor/Base/BaseButtons.vue';
 import BaseButton from '@/vendor/Base/BaseButton.vue';
 import FormControl from '@/vendor/Form/FormControl.vue';
 
-const store = usePatientsStore();
-const diseaseStore = useDiseasesStore();
-const regimentStore = useRegimentStore();
-const stateStore = useStateStore();
-const cityStore = useCityStore();
+const store = useDiseasesStore();
+const agent = useAgentStore();
+
 
 let searching = ref(false);
 const isLoading = ref(false);
@@ -28,13 +25,10 @@ const search = () => {
   store.localSearch('name');
 };
 
+
 onBeforeMount(async () => {
   isLoading.value = true; // Set loading to true while fetching data
   await store.fetchAll();
-  await diseaseStore.fetchAll();
-  await regimentStore.fetchAll();
-  await stateStore.fetchAll();
-  await cityStore.fetchAll();
   isLoading.value = false; // Set loading to false after the data has loaded
 });
 
@@ -49,16 +43,22 @@ const stopSearching = () => {
   store.selectedId = undefined;
   store.unsetFilter();
 };
+
+
+
+
+
 </script>
 
 <template>
   <SectionMain dir="rtl">
-    <SectionTitleLineWithButton  :icon="mdiCartOutline" title="المرضى" main>
+    <SectionTitleLineWithButton  :icon="mdiCartOutline" title="الأمراض" main>
+      
       <BaseButtons type="justify-start lg:justify-end" no-wrap>
         <BaseButton
-          label="إضافة مريض"
+          label="إضافة مرض"
           color="contrast"
-          to="/patients/new"
+          to="/diseases/new"
           class="font-medium ml-2"
         />
         <BaseButton
@@ -83,7 +83,7 @@ const stopSearching = () => {
     />
 
     <CardBox class="mb-6" has-table>
-      <TablePatients :patients="store.filteredList" :loading="isLoading" />
+      <TableDiseases :diseases="store.filteredList" :loading="isLoading"  />
     </CardBox>
   </SectionMain>
 </template>

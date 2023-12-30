@@ -5,36 +5,36 @@ import FormCheckRadio from '@/vendor/Form/FormCheckRadio.vue';
 const props = defineProps({
   options: {
     type: Object,
-    default: () => {},
+    default: () => {}
   },
   name: {
     type: String,
-    required: true,
+    required: true
   },
   type: {
     type: String,
     default: 'checkbox',
-    validator: (value) => ['checkbox', 'radio', 'switch'].includes(value),
+    validator: (value) => ['checkbox', 'radio', 'switch'].includes(value)
   },
   componentClass: {
     type: String,
-    default: null,
+    default: null
   },
   isColumn: Boolean,
   modelValue: {
-    type: [Array, String, Number, Boolean],
-    default: null,
-  },
-});
+    type: [Array, String, Number, Object, Boolean],
+    default: null
+  }
+})
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:modelValue'])
 
 const computedValue = computed({
   get: () => props.modelValue,
   set: (value) => {
-    emit('update:modelValue', value);
-  },
-});
+    emit('update:modelValue', value)
+  }
+})
 </script>
 
 <template>
@@ -44,11 +44,11 @@ const computedValue = computed({
       :key="option.value"
       v-model="computedValue"
       :type="type"
-      :name="option.label"
+      :name="name"
       :input-value="option.value"
       :label="option.label"
       :class="componentClass"
-      class="ml-6 mb-3 last:mr-0"
+      class="mr-6 mb-3 last:mr-0"
     />
   </div>
 </template>

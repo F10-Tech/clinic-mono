@@ -129,9 +129,9 @@ def CreateDisease(request):
 @api_view(['DELETE'])
 # @permission_classes([IsAuthenticated])
 def DeleteDisease(request, pk):
-    regiment = Regiment.objects.get(id=pk)
-    serializer = DiseaseSerializer(regiment, many=False)
-    regiment.delete()
+    disease = Disease.objects.get(id=pk)
+    serializer = DiseaseSerializer(disease, many=False)
+    disease.delete()
     return Response(serializer.data)
 
 # State and City
