@@ -54,12 +54,15 @@ class PatientSerializer(serializers.ModelSerializer):
 
 class FullCitySerializer(serializers.ModelSerializer):
 
+    # state = serializers.SerializerMethodField('get_state_data')
+    # replace state.id  with state.name
     state = serializers.SerializerMethodField('get_state_data')
 
     def get_state_data(self, obj):
-        state = State.objects.get(id=obj.state.id)
-        serializer = StateSerializer(state, many=False)
-        return serializer.data
+        if obj.state != None:
+            state = State.objects.get(id=obj.state.id)
+            return state.name
+        return None
 
     class Meta:
         model = City
@@ -69,7 +72,7 @@ class CreatePatientSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Patient
-        fields = ['name', 'age', 'phone', 'medical_operation_date', 'doctor', 'number_of_days', 'regiment', 'disease', 'other_diseases', 'city']
+        fields = ['id', 'name', 'age', 'phone', 'medical_operation_date', 'doctor', 'number_of_days', 'regiment', 'disease', 'other_diseases', 'city']
 
 class UpdatePatientSerializer(serializers.ModelSerializer):
 
