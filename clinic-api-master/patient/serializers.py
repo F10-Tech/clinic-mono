@@ -58,7 +58,7 @@ class FullCitySerializer(serializers.ModelSerializer):
 
     def get_state_data(self, obj):
         state = State.objects.get(id=obj.state.id)
-        serializer = CreateStateSerializer(state, many=False)
+        serializer = StateSerializer(state, many=False)
         return serializer.data
 
     class Meta:

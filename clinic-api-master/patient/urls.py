@@ -2,36 +2,38 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    # patient/
     path('', views.ListOfPatient),
-
     path('create', views.CreatePatient),
-    path('delete/<str:pk>', views.DeletePatient),
-    path('update/<str:pk>', views.UpdatePatient),
+    path('<str:pk>/delete', views.DeletePatient),
+    path('<str:pk>/update', views.UpdatePatient),
     path('<str:pk>/uploadImage', views.UpdateImgs),
-
     path('<str:pk>', views.DetailPatient),
-    path('regiment/', views.ListOfPatientByRegiment),
+    path('byregiment/', views.ListOfPatientByRegiment),
 
-
+    # presence/
     path('presence/<str:pk>', views.ListOfPresence),
-    path('create/presence', views.CreatePresence),
-    path('delete/presence/<str:pk>', views.DeletePresence),
+    path('presence/create', views.CreatePresence),
+    path('presence/<str:pk>/delete', views.DeletePresence),
 
+    # disease/
     path('disease/', views.ListOfDisease),
-    path('create/disease', views.CreateDisease),
-    path('delete/disease/<str:pk>', views.DeleteDisease),
+    path('disease/create', views.CreateDisease),
+    path('disease/delete/<str:pk>', views.DeleteDisease),
 
-
+    # city/
     path('city/', views.ListOfCity),
-    path('create/city', views.CreateCity),
-    path('delete/city/<str:pk>', views.DeleteCity),
+    path('city/create', views.CreateCity),
+    path('city/<str:pk>/delete', views.DeleteCity),
 
+    # state/
     path('state/', views.ListOfState),
-    path('create/state', views.CreateState),
-    path('delete/state/<str:pk>', views.DeleteState),
+    path('state/create', views.CreateState),
+    path('state/delete/<str:pk>', views.DeleteState),
 
-    # path('regiment/', views.ListOfRegiment),
-    path('create/regiment', views.CreateRegiment),
-    path('delete/regiment/<str:pk>', views.DeleteRegiment),
+    # regiment/
+    path('regiment/', views.ListOfRegiment),
+    path('regiment/create', views.CreateRegiment),
+    path('regiment/<str:pk>/delete', views.DeleteRegiment),
 
 ]
