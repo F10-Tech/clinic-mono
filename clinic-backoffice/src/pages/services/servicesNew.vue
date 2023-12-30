@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { useAgentStore, useServicesStore } from '@/stores';
+import { useAgentStore } from '@/stores';
 import type { Service } from '@/models/service';
 import SectionMain from '@/vendor/Section/SectionMain.vue';
 import CardBox from '@/vendor/CardBox/CardBox.vue';

@@ -65,7 +65,19 @@ const cities = ref();
 const img_1 = ref(undefined);
 const img_2 = ref(undefined);
 
-const patient = ref<Patient>({} as unknown as Patient);
+const patient = ref<Patient>({
+  name: '',
+  phone: '',
+  age: 0,
+  number_of_days: 0,
+  medical_operation_date: '',
+  doctor: '',
+  regiment: 0,
+  disease: '',
+  city: '',
+  other_diseases: [],
+} as unknown as Patient);
+  
 
 
 
@@ -220,7 +232,6 @@ const formatt = (date) => {
           {{ patient.other_diseases  }}
           <FormCheckRadioGroup
             v-model="patient.other_diseases"
-            type="checkbox"
             name="sample-checkbox"
             :options="diseases"
           />
