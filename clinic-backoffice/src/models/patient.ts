@@ -13,6 +13,7 @@ export class Patient {
     number_of_days!: number;
     regiment!: Regiment;
     city!: City;
+    state!: City['state'];
     age!: number;
     phone!: string;
     disease!: Disease;

@@ -7,7 +7,7 @@ import type { City } from '../../models';
 
 const agentStore = useAgentStore();
 const { citiesApi: api } = useCitiesApi();
-type SearchByType = 'state.id';
+type SearchByType = 'state';
 
 export const useCityStore = defineStore('city', {
   state: (): baseType<City> => ({

@@ -1,3 +1,3 @@
 import { abstractApi } from './api';
 
-export const useStatesApi = abstractApi('patient/presence/', 'statesApi');
+export const usePresencesApi = abstractApi('patient/presence/', 'presencesApi');

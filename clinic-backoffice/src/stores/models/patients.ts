@@ -42,15 +42,25 @@ export const usePatientsStore = defineStore('patients', {
         return false;
       }
     },
-    async create(one: Partial<Patient>): Promise<Boolean> {
+    async create(
+      one: Patient,
+      img_1: File | null = null,
+      img_2: File | null = null,
+    ): Promise<Boolean> {
       try {
-        const axios = await api.raw();
-        const { data } = await axios.post(apiUrl + '/order/', one, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `JWT ${agentStore.accessToken}`,
-          },
-        });
+        const { data } = await api.post(one);
+        if (data) {
+          if (img_1) {
+            const formData = new FormData();
+            formData.append('img_1', img_1);
+            await this.uploadImage(data.id, formData);
+          }
+          if (img_2) {
+            const formData = new FormData();
+            formData.append('img_2', img_2);
+            await this.uploadImage(data.id, formData);
+          }
+        }
       } catch (error: any) {
         return false;
       }
@@ -64,7 +74,7 @@ export const usePatientsStore = defineStore('patients', {
           const axios = await api.raw();
           const { data } = await axios.patch(apiUrl + '/patient/'+ id +'/update' , one, {
             headers: {
-              'Content-Type': 'multipart/form-data',
+              // 'Content-Type': 'multipart/json',
               Authorization: `JWT ${agentStore.accessToken}`,
             },
           });
@@ -104,15 +114,9 @@ export const usePatientsStore = defineStore('patients', {
         return false;
       }
     },
-    async deleteOrder(id: string): Promise<boolean> {
+    async deletePatient(id: string): Promise<boolean> {
       try {
-        const axios = await api.raw();
-        await axios.delete(apiUrl + '/order/' + id + '/', {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `JWT ${agentStore.accessToken}`,
-          },
-        });
+        await api.delete(id);
         return true;
       } catch (error: any) {
         const message = error.response.data.message;
