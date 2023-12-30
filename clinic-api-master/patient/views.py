@@ -18,7 +18,7 @@ def ListOfPatient(request):
 # @permission_classes([IsAuthenticated])
 def DetailPatient(request, pk):
     patient = Patient.objects.get(id=pk)
-    serializer = DetailPatientSerializer(patient, many=False)
+    serializer = PatientSerializer(patient, many=False)
     return Response(serializer.data)
 
 @api_view(['GET'])
@@ -61,8 +61,18 @@ def UpdatePatient(request, pk):
     serializer = UpdatePatientSerializer(patient, data=request.data, partial=True)
     if serializer.is_valid():
         serializer.save()
-    return Response(serializer.data)
+        return Response(serializer.data)
+    return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
+@api_view(['POST'])
+# @permission_classes([IsAuthenticated])
+def UpdateImgs(request, pk):
+    patient = Patient.objects.get(id=pk)
+    serializer = UpdateImgsSerializer(patient, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
 # @permission_classes([IsAuthenticated])

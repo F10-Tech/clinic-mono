@@ -1,40 +1,45 @@
 import {
   mdiAccountGroupOutline,
-  mdiCartOutline,
+  mdiAccountOutline ,
   mdiClipboardListOutline,
   mdiClipboardTextMultipleOutline,
-  mdiAccountTieOutline,
+  mdiListBox ,
 } from '@mdi/js';
 
 export default [
-  {
-    to: '/services',
-    label: 'Services',
-    icon: mdiClipboardListOutline,
-  },
+  // {
+  //   to: '/services',
+  //   label: 'Services',
+  //   icon: mdiClipboardListOutline,
+  // },
   {
     to: '/patients',
-    label: 'Patients',
-    icon: mdiClipboardListOutline,
+    label: 'المرضى',
+    icon: mdiAccountOutline ,
   },
   {
-    to: '/subservices',
-    label: 'Subservices',
+    to: '/presences',
+    label: 'الحضور',
+    icon: mdiListBox,
+  },
+  {
+    to: '/diseases',
+    label: 'الأمراض',
     icon: mdiClipboardTextMultipleOutline,
   },
   {
-    to: '/orders',
-    label: 'Orders',
-    icon: mdiCartOutline,
+    to: '/regiment',
+    label: 'الأفواج',
+    icon: mdiAccountGroupOutline ,
   },
-  {
-    to: '/clients',
-    label: 'Clients',
-    icon: mdiAccountGroupOutline,
-  },
-  {
-    to: '/staff',
-    label: 'Staff',
-    icon: mdiAccountTieOutline,
-  },
+  // {
+  //   to: '/clients',
+  //   label: 'Clients',
+  //   icon: mdiAccountGroupOutline,
+  // },
+  // {
+  //   to: '/staff',
+  //   label: 'Staff',
+  //   icon: mdiAccountTieOutline,
+  // },
 ];

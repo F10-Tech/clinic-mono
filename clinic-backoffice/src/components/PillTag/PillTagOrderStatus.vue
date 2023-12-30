@@ -20,11 +20,9 @@ const props = defineProps({
   outline: Boolean,
 });
 const typesMap = {
-  CANCELLED: { label: 'CANCELLED', color: 'warning' },
-  COMPLETED: { label: 'COMPLETED', color: 'success' },
-  INPROGRESS: { label: 'IN PROGRESS', color: 'info' },
-  REJECTED: { label: 'REJECTED', color: 'danger' },
-  PENDING: { label: 'PENDING', color: 'contrast' },
+  COMPLETED: { label: 'مستمر', color: 'success' },
+  CANCELLED: { label: 'منتهي', color: 'danger' },
+  IN_PROGRESS: { label: 'قريب', color: 'warning' },
 };
 const componentClass = computed(() => [
   props.small ? 'py-1 px-3' : 'py-1.5 px-4',

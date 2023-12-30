@@ -1,15 +1,16 @@
 import { defineStore } from 'pinia';
-import { useServicesApi } from '../../api/services';
+import { usePatientsApi } from '../../api/patients';
 import { useAgentStore } from './agent';
 import { convertToDict, type baseType } from './_helpers';
 import { apiUrl } from '../../main';
-import type { Service } from '../../models/service';
+import type { Patient } from '../../models';
 
-const { servicesApi: api } = useServicesApi();
 const agentStore = useAgentStore();
+const { patientsApi: api } = usePatientsApi();
+type SearchByType = 'name' | 'phone';
 
-export const useServicesStore = defineStore('services', {
-  state: (): baseType<Service> => ({
+export const usePatientsStore = defineStore('patients', {
+  state: (): baseType<Patient> => ({
     all: {},
     order: [],
     filteredIds: [],
@@ -24,49 +25,39 @@ export const useServicesStore = defineStore('services', {
         const { data } = await api.all();
         const { all, order } = convertToDict(data);
         this.all = all;
+
         this.order = order;
       } catch (error: any) {
-        const message = error.response.data.message;
         return false;
       }
       return true;
     },
-
     async fetchOne(id: string): Promise<Boolean> {
       try {
-        const data = await api.one(id);
+        const axios = await api.raw();
+        const { data } = await axios.get(apiUrl + '/order/one/' + id);
         return data;
       } catch (error: any) {
         const message = error.response.data.message;
         return false;
       }
     },
-
-    async deleteService(id: string): Promise<boolean> {
-      try {
-        await api.delete(id);
-        return true;
-      } catch (error: any) {
-        const message = error.response.data.message;
-        return false;
-      }
-    },
     async create(
-      one: Service,
-      image_dark: File | null = null,
-      image_light: File | null = null,
+      one: Patient,
+      img_1: File | null = null,
+      img_2: File | null = null,
     ): Promise<Boolean> {
       try {
         const { data } = await api.post(one);
         if (data) {
-          if (image_dark) {
+          if (img_1) {
             const formData = new FormData();
-            formData.append('image_dark', image_dark);
+            formData.append('img_1', img_1);
             await this.uploadImage(data.id, formData);
           }
-          if (image_light) {
+          if (img_2) {
             const formData = new FormData();
-            formData.append('image_light', image_light);
+            formData.append('img_2', img_2);
             await this.uploadImage(data.id, formData);
           }
         }
@@ -75,36 +66,40 @@ export const useServicesStore = defineStore('services', {
       }
       return true;
     },
-
-    async patch(
-      id: string,
-      one: Partial<Service>,
-      image_dark: File | null = null,
-      image_light: File | null = null,
-    ): Promise<Boolean> {
+    async patch(id: string, one: Partial<Patient>,
+      img_1: File | null = null,
+      img_2: File | null = null,): Promise<Boolean> {
       try {
         if (one) {
-          const { data } = await api.patch(id, one);
+          const axios = await api.raw();
+          const { data } = await axios.patch(apiUrl + '/patient/'+ id +'/update' , one, {
+            headers: {
+              // 'Content-Type': 'multipart/json',
+              Authorization: `JWT ${agentStore.accessToken}`,
+            },
+          });
         }
-        if (image_dark) {
+        if (img_1) {
+          console.log(img_1);
           const formData = new FormData();
-          formData.append('image_dark', image_dark);
+          formData.append('img_1', img_1);
           await this.uploadImage(id, formData);
         }
-        if (image_light) {
+        if (img_2) {
           const formData = new FormData();
-          formData.append('image_light', image_light);
+          formData.append('img_2', img_2);
           await this.uploadImage(id, formData);
         }
+        
+        return true;
       } catch (error: any) {
         return false;
       }
-      return true;
     },
     async uploadImage(id: string, formData: FormData): Promise<Boolean> {
       try {
         const axios = await api.raw();
-        const { data } = await axios.post(apiUrl + '/service/' + id + '/uploadImage', formData, {
+        const { data } = await axios.post(apiUrl + '/patient/' + id + '/uploadImage', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
             Authorization: `JWT ${agentStore.accessToken}`,
@@ -119,23 +114,52 @@ export const useServicesStore = defineStore('services', {
         return false;
       }
     },
+    async deletePatient(id: string): Promise<boolean> {
+      try {
+        await api.delete(id);
+        return true;
+      } catch (error: any) {
+        const message = error.response.data.message;
+        return false;
+      }
+    },
+    localSearch(searchBy: SearchByType) {
+      try {
+        const results: Patient[] = [];
+        const objects = Object.values(this.all);
+        if (this.filterQuery != '') {
+          for (const object of objects) {
+            if (object[searchBy]!.toLowerCase().includes(this.filterQuery.toLowerCase())) {
+              results.push(object);
+            }
+          }
+          this.filteredIds = results.map((result) => result.id);
+        }
+      } catch (error: any) {
+        const message = error.response.data.message;
+      }
+    },
+    unsetFilter() {
+      this.filterQuery = '';
+      this.filteredIds = [];
+    },
   },
+
   getters: {
-    selected(state): Service | undefined {
+    selected(state): Patient | undefined {
       return state.selectedId ? state.all[state.selectedId] : undefined;
     },
 
-    edited(state): Service | undefined {
+    edited(state): Patient | undefined {
       return state.editedId ? state.all[state.editedId] : undefined;
     },
 
-    list(state): Service[] {
+    list(state): Patient[] {
       return state.order.map((id) => state.all[id]);
     },
 
-    filteredList(state): Service[] {
+    filteredList(state): Patient[] {
       if (state.filterQuery != '') return state.filteredIds.map((id) => state.all[id]);
-
       return this.list;
     },
   },

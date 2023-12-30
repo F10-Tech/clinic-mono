@@ -40,17 +40,17 @@ const routes = [
     children: [
       {
         path: '',
-        name: 'services.index',
+        name: 'patients.index',
         component: () => import('@/pages/patients/patientList.vue'),
       },
       {
         path: 'new',
-        name: 'services.new',
+        name: 'patients.new',
         component: () => import('@/pages/patients/patientNew.vue'),
       },
       {
         path: 'edit/:id',
-        name: 'services.edit',
+        name: 'patients.edit',
         component: () => import('@/pages/patients/patientEdit.vue'),
       },
     ],
@@ -156,7 +156,7 @@ const routes = [
     },
     path: '/:notFound(.*)',
     name: 'notFound',
-    redirect: '/services',
+    redirect: '/patients',
   },
 ];
 
