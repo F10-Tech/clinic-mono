@@ -4,6 +4,7 @@ import { useAgentStore } from './agent';
 import { convertToDict, type baseType } from './_helpers';
 import { apiUrl } from '../../main';
 import type { Presence } from '../../models';
+import { format } from 'date-fns';
 
 const agentStore = useAgentStore();
 const { presencesApi: api } = usePresencesApi();
@@ -20,15 +21,30 @@ export const usePresenceStore = defineStore('presence', {
   }),
 
   actions: {
+    formatDate(value) {
+      if (value) {
+        return format(new Date(value), 'yyyy-MM-dd');
+      }
+    },
     async fetchAll(query: String): Promise<Boolean> {
       try {
-        const axios = await api.raw();
-        // const { data } = await axios.get(apiUrl + '/order/one/' + id);
-        const { data } = await axios.get(apiUrl + '/patient/presence/' + query );
-        console.log(data);
-        const { all, order } = convertToDict(data);
-        this.all = all;
-        this.order = order;
+        if (query == '') {
+          const axios = await api.raw();
+          // const { data } = await axios.get(apiUrl + '/order/one/' + id);
+          const { data } = await axios.get(apiUrl + '/patient/presence/today' );
+          const { all, order } = convertToDict(data);
+          this.all = all;
+          this.order = order;
+        } else {
+          const axios = await api.raw();
+          // const { data } = await axios.get(apiUrl + '/order/one/' + id);
+          const { data } = await axios.get(apiUrl + '/patient/presence/' + query );
+          const { all, order } = convertToDict(data);
+          this.all = all;
+          this.order = order;
+        }
+        
+        
       } catch (error: any) {
         return false;
       }
