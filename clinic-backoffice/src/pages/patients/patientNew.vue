@@ -229,7 +229,6 @@ const formatt = (date) => {
         </div>
         <div dir="rtl" class="w-full h-full p-4 bg-slate-900 mb-4 rounded">
           <div class=" text-2xl mb-4 font-bold "> أمراض اخرى:</div>
-          {{ patient.other_diseases  }}
           <FormCheckRadioGroup
             v-model="patient.other_diseases"
             name="sample-checkbox"

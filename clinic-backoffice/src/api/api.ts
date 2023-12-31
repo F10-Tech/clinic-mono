@@ -36,7 +36,7 @@ export const abstractApi = (apiUrl: string, name: string) => {
       },
 
       post: async (data: any) => {
-        return (await axios()).post(url + 'create', data);
+        return (await axios()).post(url + 'create/', data);
       },
 
       patch: async (id: string, data: any) => {

@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { mdiMedicalBag, mdiMagnify, mdiMedicalCottonSwab  } from '@mdi/js';
+import { mdiListBox, mdiMagnify, mdiAccountMultiplePlus } from '@mdi/js';
 import { onBeforeMount, ref, onUnmounted } from 'vue';
-import { useAgentStore, useDiseasesStore } from '@/stores/models';
+import { useAgentStore, useRecordStore } from '@/stores/models';
 import SectionMain from '@/vendor/Section/SectionMain.vue';
-import TableDiseases from '@/components/Tables/TableDiseases.vue';
+import TableRecordPresences from '@/components/Tables/TableRecordPresences.vue';
 import CardBox from '@/vendor/CardBox/CardBox.vue';
 import SectionTitleLineWithButton from '@/vendor/Section/SectionTitleLineWithButton.vue';
 import BaseButtons from '@/vendor/Base/BaseButtons.vue';
 import BaseButton from '@/vendor/Base/BaseButton.vue';
 import FormControl from '@/vendor/Form/FormControl.vue';
 
-const store = useDiseasesStore();
+const store = useRecordStore();
 const agent = useAgentStore();
 
 
@@ -52,15 +52,15 @@ const stopSearching = () => {
 
 <template>
   <SectionMain dir="rtl">
-    <SectionTitleLineWithButton  :icon="mdiMedicalBag" title="الأمراض" main>
+    <SectionTitleLineWithButton  :icon="mdiListBox" title="تسجيل الحضور" main>
       
       <BaseButtons type="justify-start lg:justify-end" no-wrap>
         <BaseButton
-          label="إضافة مرض"
+          label="لإحة الحضور"
           color="contrast"
-          :icon="mdiMedicalCottonSwab"
-          to="/diseases/new"
+          to="/records/presences"
           class="font-medium ml-2"
+          :icon="mdiAccountMultiplePlus "
         />
         <BaseButton
           :icon="mdiMagnify"
@@ -74,7 +74,7 @@ const stopSearching = () => {
     <FormControl
       v-if="searching"
       v-model="store.filterQuery"
-      placeholder="البحث عن مرض"
+      placeholder="البحث عن مريض"
       ctrl-k-focus
       transparent
       borderless
@@ -84,7 +84,7 @@ const stopSearching = () => {
     />
 
     <CardBox class="mb-6" has-table>
-      <TableDiseases :diseases="store.filteredList" :loading="isLoading"  />
+      <TableRecordPresences :patients="store.filteredList" :loading="isLoading" />
     </CardBox>
   </SectionMain>
 </template>

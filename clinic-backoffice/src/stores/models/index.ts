@@ -6,3 +6,4 @@ export * from './regiments';
 export * from './cities';
 export * from './presences';
 export * from './states';
+export * from './record';
