@@ -31,7 +31,7 @@ def ListOfPatientByRegiment(request):
             if day.name == datetime.datetime.today().strftime("%A"):
                 print(day.name)
                 patients = regiment.patient_set.all()
-                serializer = PatientSerializer(patients, many=True)
+                serializer = ListPatientByRegimentSerializer(patients, many=True)
                 return Response(serializer.data)
     return Response(status.HTTP_400_BAD_REQUEST)
 

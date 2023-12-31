@@ -4,7 +4,7 @@ from . import views
 urlpatterns = [
     # patient/
     path('', views.ListOfPatient),
-    path('create', views.CreatePatient),
+    path('create/', views.CreatePatient),
     path('<str:pk>/delete', views.DeletePatient),
     path('<str:pk>/update', views.UpdatePatient),
     path('<str:pk>/uploadImage', views.UpdateImgs),
@@ -13,12 +13,12 @@ urlpatterns = [
 
     # presence/
     path('presence/<str:pk>', views.ListOfPresence),
-    path('presence/create', views.CreatePresence),
+    path('presence/create/', views.CreatePresence),
     path('presence/<str:pk>/delete', views.DeletePresence),
 
     # disease/
     path('disease/', views.ListOfDisease),
-    path('disease/create', views.CreateDisease),
+    path('disease/create/', views.CreateDisease),
     path('disease/<str:pk>/delete', views.DeleteDisease),
 
     # city/
