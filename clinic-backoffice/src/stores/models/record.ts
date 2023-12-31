@@ -1,15 +1,15 @@
 import { defineStore } from 'pinia';
-import { usePatientsApi } from '../../api/patients';
+import { usePatientsRegimentApi } from '../../api/patientsPegiments';
 import { useAgentStore } from './agent';
 import { convertToDict, type baseType } from './_helpers';
 import { apiUrl } from '../../main';
 import type { Patient } from '../../models';
 
 const agentStore = useAgentStore();
-const { patientsApi: api } = usePatientsApi();
-type SearchByType = 'name' | 'phone';
+const { patientsRegimentApi: api } = usePatientsRegimentApi();
+type SearchByType = 'name';
 
-export const usePatientsStore = defineStore('patients', {
+export const useRecordStore = defineStore('record', {
   state: (): baseType<Patient> => ({
     all: {},
     order: [],
@@ -25,6 +25,7 @@ export const usePatientsStore = defineStore('patients', {
         const { data } = await api.all();
         const { all, order } = convertToDict(data);
         this.all = all;
+
         this.order = order;
       } catch (error: any) {
         return false;

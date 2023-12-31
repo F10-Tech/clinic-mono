@@ -138,9 +138,7 @@ const deletePatient = async () => {
   }
 };
 const submit = async () => {
-  // for (let i = 0; i < patient.value.other_diseases.length; i++) {
-    console.log(patient.value);
-  // }
+  
   patient.value.medical_operation_date = formatDate(patient.value.medical_operation_date);
   const isUpdated = await store.patch(
     store.editedId!,
@@ -295,7 +293,6 @@ const formatt = (date) => {
         </div>
         <div  class="w-full h-full p-4 bg-slate-900 mb-4 rounded">
           <div class=" text-2xl mb-4 font-bold "> أمراض اخرى:</div>
-          {{ patient.other_diseases  }}
           <FormCheckRadioGroup
             v-model="patient.other_diseases"
             name="sample-checkbox"
@@ -351,8 +348,8 @@ const formatt = (date) => {
 
         <BaseButtons class="flex justify-between">
           
-          <BaseButton class="mr-0 lg:ml-4  lg:w-[79%] w-full" type="submit" color="success" label="حفظ" @click="submit" />
-          <BaseButton class=" lg:w-[19.6%] w-full" color="danger" label="حذف" @click="modalActive = true" />
+          <BaseButton class="mr-0 lg:ml-4  lg:w-[77%] w-full" type="submit" color="success" label="حفظ" @click="submit" />
+          <BaseButton class=" lg:w-[20%] w-full" color="danger" label="حذف" @click="modalActive = true" />
         </BaseButtons>
       </CardBox>
       <NotificationBar

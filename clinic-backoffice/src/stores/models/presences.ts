@@ -20,37 +20,24 @@ export const usePresenceStore = defineStore('presence', {
   }),
 
   actions: {
-    async fetchAll(): Promise<Boolean> {
+    async fetchAll(query: String): Promise<Boolean> {
       try {
-        const { data } = await api.all();
+        const axios = await api.raw();
+        // const { data } = await axios.get(apiUrl + '/order/one/' + id);
+        const { data } = await axios.get(apiUrl + '/patient/presence/' + query );
+        console.log(data);
         const { all, order } = convertToDict(data);
         this.all = all;
-
         this.order = order;
       } catch (error: any) {
         return false;
       }
       return true;
     },
-    // async fetchOne(id: string): Promise<Boolean> {
-    //   try {
-    //     const axios = await api.raw();
-    //     const { data } = await axios.get(apiUrl + '/order/one/' + id);
-    //     return data;
-    //   } catch (error: any) {
-    //     const message = error.response.data.message;
-    //     return false;
-    //   }
-    // },
-    async create(one: Partial<Presence>): Promise<Boolean> {
+    async create(one: Presence): Promise<Boolean> {
       try {
-        const axios = await api.raw();
-        const { data } = await axios.post(apiUrl + '/order/', one, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `JWT ${agentStore.accessToken}`,
-          },
-        });
+        const { data } = await api.post(one);
+        return true;
       } catch (error: any) {
         return false;
       }
@@ -70,15 +57,9 @@ export const usePresenceStore = defineStore('presence', {
         return false;
       }
     },
-    async deleteOrder(id: string): Promise<boolean> {
+    async delete(id: string): Promise<boolean> {
       try {
-        const axios = await api.raw();
-        await axios.delete(apiUrl + '/order/' + id + '/', {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `JWT ${agentStore.accessToken}`,
-          },
-        });
+        await api.delete(id);
         return true;
       } catch (error: any) {
         const message = error.response.data.message;

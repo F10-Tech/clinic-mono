@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { mdiCartOutline, mdiMagnify } from '@mdi/js';
+import { mdiAccountMultiplePlus , mdiMagnify,mdiAccount  } from '@mdi/js';
 import { onBeforeMount, ref, onUnmounted } from 'vue';
 
 import { usePatientsStore, useDiseasesStore, useRegimentStore, useStateStore, useCityStore } from '@/stores/models';
@@ -53,13 +53,14 @@ const stopSearching = () => {
 
 <template>
   <SectionMain dir="rtl">
-    <SectionTitleLineWithButton  :icon="mdiCartOutline" title="المرضى" main>
+    <SectionTitleLineWithButton  :icon="mdiAccount" title="المرضى" main>
       <BaseButtons type="justify-start lg:justify-end" no-wrap>
         <BaseButton
           label="إضافة مريض"
           color="contrast"
           to="/patients/new"
           class="font-medium ml-2"
+          :icon="mdiAccountMultiplePlus "
         />
         <BaseButton
           :icon="mdiMagnify"
@@ -73,7 +74,7 @@ const stopSearching = () => {
     <FormControl
       v-if="searching"
       v-model="store.filterQuery"
-      placeholder="Search (ctrl+k)"
+      placeholder="البحث عن مريض"
       ctrl-k-focus
       transparent
       borderless

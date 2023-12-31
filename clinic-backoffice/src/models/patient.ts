@@ -22,6 +22,7 @@ export class Patient {
     presence!: Presence[];
     img_1!: string;
     img_2!: string;
+    checkout!: boolean;
   
     constructor(data: Partial<Patient>) {
       Object.assign(this, data);

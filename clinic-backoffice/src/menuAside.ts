@@ -7,18 +7,13 @@ import {
 } from '@mdi/js';
 
 export default [
-  // {
-  //   to: '/services',
-  //   label: 'Services',
-  //   icon: mdiClipboardListOutline,
-  // },
   {
     to: '/patients',
     label: 'المرضى',
     icon: mdiAccountOutline ,
   },
   {
-    to: '/presences',
+    to: '/records',
     label: 'الحضور',
     icon: mdiListBox,
   },
