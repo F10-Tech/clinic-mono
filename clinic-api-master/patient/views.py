@@ -42,10 +42,16 @@ def ListOfPatientByRegiment(request):
 @api_view(['POST'])
 # @permission_classes([IsAuthenticated])
 def CreatePatient(request):
+    if request.data['price'] != None:
+        price = Price.objects.get(id=request.data['price'])
+        request.data['rest'] = price.price * request.data['number_of_days']
+
     serializer = CreatePatientSerializer(data=request.data)
+
     if serializer.is_valid():
-        serializer.save()
-    return Response(serializer.data)
+            serializer.save()
+            return Response(serializer.data)
+    return Response(status.HTTP_400_BAD_REQUEST)
 
 @api_view(['DELETE'])
 # @permission_classes([IsAuthenticated])

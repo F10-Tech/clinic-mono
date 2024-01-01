@@ -1,3 +1,4 @@
+import math
 from rest_framework import serializers
 from .models import *
 import datetime
@@ -10,8 +11,22 @@ class PatientSerializer(serializers.ModelSerializer):
     city = serializers.SerializerMethodField('get_city_data')
     regiment = serializers.SerializerMethodField('get_regiment_data')
     disease = serializers.SerializerMethodField('get_disease_data')
-    # other_diseases = serializers.SerializerMethodField('get_other_diseases_data')
+    sessions = serializers.SerializerMethodField('get_sessions_data')
     presence = serializers.SerializerMethodField('get_presence_data')
+
+    def get_sessions_data(self, obj):
+        presence = Presence.objects.filter(patient=obj.id)
+        if obj.price != None:
+            price = Price.objects.get(id = obj.price.id)
+            if presence.count() == 0 and obj.rest == 0:
+                return obj.number_of_days
+            if presence.count() > 0:
+                return math.floor( ( obj.number_of_days - (obj.rest / price.price ))  - presence.count())
+        return 0
+        
+       
+        # obj.rest =  presence.count() * obj.price.price
+        return (presence.count() - obj.rest) / price.price
 
     def get_state_data(self, obj):
         if obj.number_of_days == 0:
@@ -31,7 +46,7 @@ class PatientSerializer(serializers.ModelSerializer):
         return None
 
     def get_regiment_data(self, obj):
-        if obj.regiment != None:
+        if obj.regiment != None: 
             regiment = Regiment.objects.get(id=obj.regiment.id)
             serializer = RegimentSerializer(regiment, many=False)
             return serializer.data
@@ -129,9 +144,10 @@ class FullCitySerializer(serializers.ModelSerializer):
 
 class CreatePatientSerializer(serializers.ModelSerializer):
 
+
     class Meta:
         model = Patient
-        fields = ['id', 'name', 'age', 'phone', 'medical_operation_date', 'doctor', 'number_of_days', 'regiment', 'disease', 'other_diseases', 'city']
+        fields = ['id', 'name', 'age', 'phone', 'medical_operation_date', 'doctor', 'number_of_days', 'regiment', 'disease', 'other_diseases', 'city', 'rest']
 
 class UpdatePatientSerializer(serializers.ModelSerializer):
 
@@ -222,3 +238,9 @@ class CreateRegimentSerializer(serializers.ModelSerializer):
         class Meta:
             model = Regiment
             fields = ['name','days']
+
+class PriceSerializer(serializers.ModelSerializer):
+    
+        class Meta:
+            model = Price
+            fields = '__all__'
