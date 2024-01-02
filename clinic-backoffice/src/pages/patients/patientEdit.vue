@@ -6,7 +6,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { usePatientsStore, useCityStore ,useStateStore,  useAgentStore, useStyleStore, useDiseasesStore, useRegimentStore } from '@/stores';
 import type { Patient } from '@/models/patient';
 import SectionMain from '@/vendor/Section/SectionMain.vue';
-import BaseIcon from '@/vendor/Base/BaseIcon.vue';
+import PillTag from '@/vendor/PillTag/PillTag.vue';
 import CardBox from '@/vendor/CardBox/CardBox.vue';
 import FormField from '@/vendor/Form/FormField.vue';
 import FormControl from '@/vendor/Form/FormControl.vue';
@@ -119,6 +119,7 @@ const patient = ref<Patient>({
   doctor: store.edited?.doctor,
   regiment: store.edited?.regiment?.id,
   city: store.edited?.city?.id,
+  rest: store.edited?.rest,
 } as unknown as Patient);
 isLoading.value = false;
 onUnmounted(() => {
@@ -194,7 +195,17 @@ const formatt = (date) => {
 
   <div v-else>
     <SectionMain  v-if="patient">
-      <SectionTitleLineWithButton :icon="mdiBookEdit" dir="rtl" title="الملف الشخصي للمريض" main />
+      <SectionTitleLineWithButton :icon="mdiBookEdit" dir="rtl" title="الملف الشخصي للمريض" main >
+        <div class="flex">
+          <h1 class="mx-4 text-2xl">
+          الباقي :
+          </h1>
+        
+          
+          <PillTag  class="text-2xl rounded-sm"   color="danger" :label="`${patient.rest} دج`" />
+        </div>
+
+      </SectionTitleLineWithButton>
       <CardBoxModal
         v-model="modalActive"
         title="Please confirm the delete"

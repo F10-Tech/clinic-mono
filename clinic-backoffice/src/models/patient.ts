@@ -23,6 +23,8 @@ export class Patient {
     img_1!: string;
     img_2!: string;
     checkout!: boolean;
+    rest!: number;
+    sessions!: number;
   
     constructor(data: Partial<Patient>) {
       Object.assign(this, data);

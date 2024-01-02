@@ -26,9 +26,12 @@ const search = () => {
 };
 
 
+
+
 onBeforeMount(async () => {
   isLoading.value = true; // Set loading to true while fetching data
   await store.fetchAll();
+  console.log('store', store.all);
   isLoading.value = false; // Set loading to false after the data has loaded
 });
 

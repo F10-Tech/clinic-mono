@@ -4,3 +4,4 @@ export * from './regiment';
 export * from './city';
 export * from './presence';
 export * from './state';
+export * from './order';
