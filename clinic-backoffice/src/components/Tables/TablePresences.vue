@@ -109,7 +109,7 @@ const deletePresences = async () => {
           <th class="text-center">الأسم</th>
           <th class="text-center">اليوم</th>
           <th class="text-center">التاريخ</th>
-          <!-- <th /> -->
+          <th />
         </tr>
       </thead>
       <tbody>
@@ -118,7 +118,27 @@ const deletePresences = async () => {
             {{ presence.patient }}
           </td>
           <td data-label="اليوم" class="text-center">
-            {{ presence.day }}
+            <div v-if="presence.day == 'Thursday' " class="mx-2">
+                      الخميس 
+              </div>
+              <div v-if="presence.day == 'Friday' " class="mx-2">
+                      الجمعة 
+              </div>
+              <div v-if="presence.day == 'Saturday' " class="mx-2">
+                      السبت 
+              </div>
+              <div v-if="presence.day == 'Sunday' " class="mx-2">
+                      الأحد 
+              </div>
+              <div v-if="presence.day == 'Monday' " class="mx-2">
+                      الإثنين 
+              </div>
+              <div v-if="presence.day == 'Tuesday' " class="mx-2">
+                      الثلاثاء 
+              </div>
+              <div v-if="presence.day == 'Wednesday' " class="mx-2">
+                      اللإربعاء 
+              </div>
           </td>
           <td data-label="الأسم" class="text-center">
             {{  formatDate(presence.created_at)}} 

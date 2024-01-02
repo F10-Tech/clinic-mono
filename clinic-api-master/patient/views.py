@@ -88,7 +88,7 @@ def UpdateImgs(request, pk):
 # @permission_classes([IsAuthenticated])
 def ListOfPresence(request, pk):
     if pk == 'today':
-        presence = Presence.objects.filter(created_at__date=datetime.datetime.today())
+        presence = Presence.objects.filter(created_at__date=datetime.today())
 
 
     else:
