@@ -243,7 +243,7 @@ class RegimentSerializer(serializers.ModelSerializer):
     
         class Meta:
             model = Regiment
-            fields = ['id', 'name','days']
+            fields = ['id', 'name','days', 'period']
 
 class CreateRegimentSerializer(serializers.ModelSerializer):
     
@@ -256,3 +256,9 @@ class PriceSerializer(serializers.ModelSerializer):
         class Meta:
             model = Price
             fields = '__all__'
+
+class DaySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Day
+        fields = '__all__'

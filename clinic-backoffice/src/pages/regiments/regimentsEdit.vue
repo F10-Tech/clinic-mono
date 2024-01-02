@@ -2,8 +2,8 @@
 import { LoopingRhombusesSpinner } from 'epic-spinners';
 import { ref, onUnmounted, onBeforeMount } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { usePatientsStore, useCityStore ,useStateStore,  useAgentStore, useStyleStore, useDiseasesStore, useRegimentStore } from '@/stores';
-import type { Patient } from '@/models/patient';
+import { useRegimentStore, useAgentStore, useDaysStore } from '@/stores';
+import type { Regiment } from '@/models';
 import SectionMain from '@/vendor/Section/SectionMain.vue';
 import CardBox from '@/vendor/CardBox/CardBox.vue';
 import FormField from '@/vendor/Form/FormField.vue';
@@ -12,12 +12,10 @@ import FormCheckRadioGroup from '@/vendor/Form/FormCheckRadioGroup.vue';
 import BaseDivider from '@/vendor/Base/BaseDivider.vue';
 import BaseButton from '@/vendor/Base/BaseButton.vue';
 import BaseButtons from '@/vendor/Base/BaseButtons.vue';
-import DropZone from '@/components/Base/DropZone.vue';
 import CardBoxModal from '@/vendor/CardBox/CardBoxModal.vue';
 import SectionTitleLineWithButton from '@/vendor/Section/SectionTitleLineWithButton.vue';
 import NotificationBar from '@/vendor/NotificationBar/NotificationBar.vue';
 import { format } from 'date-fns';
-import VueDatePicker from '@vuepic/vue-datepicker';
 
 
 
@@ -33,63 +31,24 @@ onBeforeMount(async () => {
   isLoading.value = false; // Set loading to false after the data has loaded
 });
 
-const store = usePatientsStore();
+const store = useRegimentStore();
 const agent = useAgentStore();
-const styleStore = useStyleStore();
-const diseaseStore = useDiseasesStore();
-const regimentStore = useRegimentStore();
-const statesStore = useStateStore();
-const cityStore = useCityStore();
-
-
-const states = ref(
-  statesStore.list.map((state) => {
+const daysStore = useDaysStore();
+const days = ref(
+  daysStore.list.map((day) => {
     return {
-      value: state.id,
-      label: state.name,
+      value: day.id,
+      label: day.name,
     };
   }),
-);
-const diseases = ref(
-  diseaseStore.list.map((disease) => {
-    return {
-      value: disease.id,
-      label: disease.name,
-    };
-  }),
-);
-const regiment = ref(
-  regimentStore.list.map((regiment) => {
-    return {
-      value: regiment.id,
-      label: regiment.name,
-    };
-  }),
-);
-const cities = ref(
-  cityStore.filteredList.map((city) => {
-      return {
-        value: city.id,
-        label: city.name,
-      };
-  })
 );
 
 onUnmounted(() => {
-  cityStore.filterQuery = '';
-  cityStore.selectedId = undefined;
-  cityStore.unsetFilter();
+  store.filterQuery = '';
+  // cityStore.selectedId = undefined;
+  // cityStore.unsetFilter();
 });
 
-const search = () => {
-  cityStore.localSearch('state');
-  cities.value = cityStore.filteredList.map((city) => {
-      return {
-        value: city.id,
-        label: city.name,
-      };
-  })
-};
 
 const route = useRoute();
 const router = useRouter();
@@ -97,38 +56,30 @@ const router = useRouter();
 const modalActive = ref(false);
 const isLoading = ref(true);
 
-const img_1 = ref<File | undefined>(undefined);
-const img_2 = ref<File | undefined>(undefined);
 
-
+const periods = [
+  { value: 'MORNING', label: 'صباحية' },
+  { value: 'EVENING', label: 'مسائية' },
+] 
 
 store.editedId = route.params.id.toString();
-const patient = ref<Patient>({
+const regiment = ref<Regiment>({
   name: store.edited?.name,
-  phone: store.edited?.phone,
-  age: store.edited?.age,
-  number_of_days: store.edited?.number_of_days,
-  disease: store.edited?.disease?.id,
-  other_diseases: store.edited?.other_diseases,
-  img_1: store.edited?.img_1,
-  img_2: store.edited?.img_2,
-  presence: store.edited?.presence,
-  medical_operation_date: store.edited?.medical_operation_date,
-  doctor: store.edited?.doctor,
-  regiment: store.edited?.regiment?.id,
-  city: store.edited?.city?.id,
-} as unknown as Patient);
+  id: store.edited?.id,
+  days: store.edited?.days,
+  period: store.edited?.period,
+} as unknown as Regiment);
 isLoading.value = false;
 onUnmounted(() => {
   store.editedId = undefined;
 });
-const deletePatient = async () => {
-  const isDeleted = await store.deletePatient(store.editedId!);
+const deleteRegiment = async () => {
+  const isDeleted = await store.delete(store.editedId!);
   if (isDeleted) {
     formStatusSubmit();
     setTimeout(function () {
       BackHim();
-      router.push('/patients');
+      router.push('/regiments');
     }, agent.timeToKill);
   } else {
     formStatusCurrent.value = 2;
@@ -141,15 +92,13 @@ const submit = async () => {
   
   const isUpdated = await store.patch(
     store.editedId!,
-    patient.value,
-    img_1.value,
-    img_2.value,
+    regiment.value,
   );
   if (isUpdated) {
     formStatusSubmit();
     setTimeout(function () {
       BackHim();
-      router.push('/patients');
+      router.push('/regiments');
     }, agent.timeToKill);
   } else {
     formStatusCurrent.value = 2;
@@ -190,8 +139,8 @@ const formatt = (date) => {
   </div>
 
   <div v-else>
-    <SectionMain  v-if="patient">
-      <SectionTitleLineWithButton dir="rtl" title="الملف الشخصي للمريض" main />
+    <SectionMain  v-if="regiment">
+      <SectionTitleLineWithButton dir="rtl" :title="regiment.name" main />
       <CardBoxModal
         v-model="modalActive"
         title="Please confirm the delete"
@@ -199,148 +148,35 @@ const formatt = (date) => {
         button-cancel-label="Cancel"
         button="danger"
         has-cancel
-        @confirm="deletePatient"
+        @confirm="deleteRegiment"
+      
       />
-
       <CardBox dir="rtl" form @submit.prevent="submit">
-       
-        <div class="flex">
-          <FormField  label="رقم الهاتف" class=" ml-3 w-1/2">
+        <div class="flex w-full">
+          <FormField  label="اسم الفوج " class=" ml-3 w-1/2" >
             <FormControl
-              v-model="patient.phone"
+              v-model="regiment.name"
+              type="text"
+              placeholder=" اسم الفوج "
+              :style="{ direction: 'rtl' }"
+            />
+          </FormField>
+          <FormField  label="الفترة " class="w-1/2" >
+            <FormControl
+              v-model="regiment.period"
               type="text"
               placeholder="رقم الهاتف "
+              :options="periods"
               :style="{ direction: 'rtl' }"
             />
-          </FormField>
-          <FormField  label="الاسم الكامل" class=" w-1/2">
-            <FormControl
-              v-model="patient.name"
-              type="text"
-              placeholder="الاسم بالعربية"
-              :style="{ direction: 'rtl' }"
-            />
-          </FormField>
-        </div>
-        <div class="flex">
-          <FormField  label="عدد الحصص" class="ml-3 w-1/2">
-            <FormControl
-              v-model="patient.number_of_days"
-              type="number"
-              placeholder="عدد الحصص"
-              :style="{ direction: 'rtl' }"
-            />
-          </FormField>
-
-          <FormField  label="العمر" class=" w-1/2">
-            <FormControl
-              v-model="patient.age"
-              type="number"
-              placeholder="العمر "
-            />
-          </FormField>
-        </div>
-        <div class="flex">
-          <FormField  label="تاريخ إجراء العملية" class=" ml-3 w-1/2">
-            <VueDatePicker v-model="patient.medical_operation_date" :format="formatt" :dark="styleStore.darkMode" />
-          </FormField>
-          <FormField  label="الطبيب" class=" w-1/2">
-            <FormControl
-              v-model="patient.doctor"
-              type="text"
-              placeholder="المرض الأساسي "
-              :style="{ direction: 'rtl' }"
-            />
-          </FormField>
-          
-        </div>
-        <div class="flex mb-4">
-          <FormField  label="الفوج" class="ml-3 w-1/2">
-            <FormControl
-              v-model="patient.regiment"
-              :options="regiment"
-              type="text"
-              placeholder="مرض"
-            />
-          </FormField>
-
-          <FormField dir="rtl" label="مرض" class=" w-1/2">
-            <FormControl
-              v-model="patient.disease"
-              :options="diseases"
-              type="text"
-              placeholder="مرض"
-            />
-          </FormField>
-        </div>
-        <div class="flex mb-4">
-           <FormField dir="rtl" label="الولاية" class="ml-3 w-1/2">
-           <FormControl
-              :options="states"
-              v-model="cityStore.filterQuery"
-              placeholder="الولاية"
-              @change="search()"
-            />
-          </FormField>
-          <FormField dir="rtl" label="المدينة" class="ml-3 w-1/2">
-           <FormControl
-              :options="cities"
-              v-model="patient.city"
-              placeholder="اختر الولاية أولا"
-            /> 
           </FormField>
         </div>
         <div  class="w-full h-full p-4 bg-slate-900 mb-4 rounded">
-          <div class=" text-2xl mb-4 font-bold "> أمراض اخرى:</div>
+          <div class=" text-2xl mb-4 font-bold "> الأيام :</div>
           <FormCheckRadioGroup
-            v-model="patient.other_diseases"
+            v-model="regiment.days"
             name="sample-checkbox"
-            :options="diseases"
-          />
-        </div>
-        <div class="w-full h-full p-4 bg-slate-900 mb-4 rounded">
-          <div class=" text-2xl mb-4 font-bold "> الحضور:</div>
-          <div class=" ml-4 mb-2 text-xl flex" v-for="one in patient.presence" :key="one.id">
-              - <div v-if="one.day == 'Thursday' " class="mx-2">
-                      الخميس 
-              </div>
-              <div v-if="one.day == 'Friday' " class="mx-2">
-                      الجمعة 
-              </div>
-              <div v-if="one.day == 'Saturday' " class="mx-2">
-                      السبت 
-              </div>
-              <div v-if="one.day == 'Sunday' " class="mx-2">
-                      الأحد 
-              </div>
-              <div v-if="one.day == 'Monday' " class="mx-2">
-                      الإثنين 
-              </div>
-              <div v-if="one.day == 'Tuesday' " class="mx-2">
-                      الثلاثاء 
-              </div>
-              <div v-if="one.day == 'Wednesday' " class="mx-2">
-                      اللإربعاء 
-              </div>
-
-               -- {{ formatDate(one.created_at) }}
-          </div>
-        </div>
-
-        <div class="flex justify-between">
-          <DropZone
-            v-model="img_1"
-            :preview="patient.img_1"
-            class="w-[95%]"
-            text="رفع صورة رقم 1"
-            mode="edit"
-          />
-          <DropZone
-            v-model="img_2"
-            :preview="patient.img_2"
-            class="w-[95%]"
-            text="رفع صورة رقم 2"
-            mode="edit"
+            :options="days"
           />
         </div>
         <BaseDivider />

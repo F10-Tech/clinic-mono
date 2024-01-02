@@ -29,7 +29,7 @@ export default [
     icon: mdiMedicalBag,
   },
   {
-    to: '/regiment',
+    to: '/regiments',
     label: 'الأفواج',
     icon: mdiAccountGroup ,
   },

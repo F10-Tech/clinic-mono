@@ -35,5 +35,9 @@ urlpatterns = [
     path('regiment/', views.ListOfRegiment),
     path('regiment/create', views.CreateRegiment),
     path('regiment/<str:pk>/delete', views.DeleteRegiment),
+    path('regiment/<str:pk>/update', views.UpdateRegiment),
+
+    # days/
+    path('days/', views.ListOfDays),
 
 ]

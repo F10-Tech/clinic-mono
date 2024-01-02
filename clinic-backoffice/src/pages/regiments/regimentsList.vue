@@ -2,20 +2,17 @@
 import { mdiAccountMultiplePlus , mdiMagnify,mdiAccount  } from '@mdi/js';
 import { onBeforeMount, ref, onUnmounted } from 'vue';
 
-import { usePatientsStore, useDiseasesStore, useRegimentStore, useStateStore, useCityStore } from '@/stores/models';
+import { useRegimentStore, useDaysStore } from '@/stores/models';
 import SectionMain from '@/vendor/Section/SectionMain.vue';
-import TablePatients from '@/components/Tables/TablePatients.vue';
+import TableRegiments from '@/components/Tables/TableRegiments.vue';
 import CardBox from '@/vendor/CardBox/CardBox.vue';
 import SectionTitleLineWithButton from '@/vendor/Section/SectionTitleLineWithButton.vue';
 import BaseButtons from '@/vendor/Base/BaseButtons.vue';
 import BaseButton from '@/vendor/Base/BaseButton.vue';
 import FormControl from '@/vendor/Form/FormControl.vue';
 
-const store = usePatientsStore();
-const diseaseStore = useDiseasesStore();
-const regimentStore = useRegimentStore();
-const stateStore = useStateStore();
-const cityStore = useCityStore();
+const store = useRegimentStore();
+const daysStore = useDaysStore();
 
 let searching = ref(false);
 const isLoading = ref(false);
@@ -31,10 +28,7 @@ const search = () => {
 onBeforeMount(async () => {
   isLoading.value = true; // Set loading to true while fetching data
   await store.fetchAll();
-  await diseaseStore.fetchAll();
-  await regimentStore.fetchAll();
-  await stateStore.fetchAll();
-  await cityStore.fetchAll();
+  await daysStore.fetchAll();
   isLoading.value = false; // Set loading to false after the data has loaded
 });
 
@@ -53,12 +47,12 @@ const stopSearching = () => {
 
 <template>
   <SectionMain dir="rtl">
-    <SectionTitleLineWithButton  :icon="mdiAccount" title="المرضى" main>
+    <SectionTitleLineWithButton  :icon="mdiAccount" title="الأفواج" main>
       <BaseButtons type="justify-start lg:justify-end" no-wrap>
         <BaseButton
-          label="إضافة مريض"
+          label="إضافة فوج"
           color="contrast"
-          to="/patients/new"
+          to="/regiments/new"
           class="font-medium ml-2"
           :icon="mdiAccountMultiplePlus "
         />
@@ -84,7 +78,7 @@ const stopSearching = () => {
     />
 
     <CardBox class="mb-6" has-table>
-      <TablePatients :patients="store.filteredList" :loading="isLoading" />
+      <TableRegiments :regiments="store.filteredList" :loading="isLoading" />
     </CardBox>
   </SectionMain>
 </template>

@@ -1,16 +1,16 @@
 import { defineStore } from 'pinia';
-import { useRegimentsApi } from '../../api/regiment';
+import { useDaysApi } from '../../api/days';
 import { useAgentStore } from './agent';
 import { convertToDict, type baseType } from './_helpers';
 import { apiUrl } from '../../main';
-import type { Regiment } from '../../models';
+import type { Day } from '../../models';
 
 const agentStore = useAgentStore();
-const { regimentsApi: api } = useRegimentsApi();
+const { daysApi: api } = useDaysApi();
 type SearchByType = 'name' | 'phone';
 
-export const useRegimentStore = defineStore('regiment', {
-  state: (): baseType<Regiment> => ({
+export const useDaysStore = defineStore('days', {
+  state: (): baseType<Day> => ({
     all: {},
     order: [],
     filteredIds: [],
@@ -25,60 +25,83 @@ export const useRegimentStore = defineStore('regiment', {
         const { data } = await api.all();
         const { all, order } = convertToDict(data);
         this.all = all;
-
         this.order = order;
       } catch (error: any) {
         return false;
       }
       return true;
     },
-    // async fetchOne(id: string): Promise<Boolean> {
-    //   try {
-    //     const axios = await api.raw();
-    //     const { data } = await axios.get(apiUrl + '/order/one/' + id);
-    //     return data;
-    //   } catch (error: any) {
-    //     const message = error.response.data.message;
-    //     return false;
-    //   }
-    // },
-    async create(one: Partial<Regiment>): Promise<Boolean> {
+    async fetchOne(id: string): Promise<Boolean> {
       try {
         const axios = await api.raw();
-        const { data } = await axios.post(apiUrl + '/order/', one, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `JWT ${agentStore.accessToken}`,
-          },
-        });
+        const { data } = await axios.get(apiUrl + '/order/one/' + id);
+        return data;
+      } catch (error: any) {
+        const message = error.response.data.message;
+        return false;
+      }
+    },
+    async create(
+      one: Day,
+    ): Promise<Boolean> {
+      try {
+        const { data } = await api.post(one);
       } catch (error: any) {
         return false;
       }
       return true;
     },
-    async patch(id: string, one: Partial<Regiment>): Promise<Boolean> {
+    async patch(id: string, one: Partial<Day>,
+      img_1: File | null = null,
+      img_2: File | null = null,): Promise<Boolean> {
       try {
-        const axios = await api.raw();
-        const { data } = await axios.patch(apiUrl + '/patient/regiment/' + id + '/update', one, {
-          // headers: {
-          //   // 'Content-Type': 'multipart/form-data',
-          //   Authorization: `JWT ${agentStore.accessToken}`,
-          // },
-        });
+        if (one) {
+          const axios = await api.raw();
+          const { data } = await axios.patch(apiUrl + '/patient/'+ id +'/update' , one, {
+            headers: {
+              // 'Content-Type': 'multipart/json',
+              Authorization: `JWT ${agentStore.accessToken}`,
+            },
+          });
+        }
+        if (img_1) {
+          console.log(img_1);
+          const formData = new FormData();
+          formData.append('img_1', img_1);
+          await this.uploadImage(id, formData);
+        }
+        if (img_2) {
+          const formData = new FormData();
+          formData.append('img_2', img_2);
+          await this.uploadImage(id, formData);
+        }
+        
         return true;
       } catch (error: any) {
         return false;
       }
     },
-    async delete(id: string): Promise<boolean> {
+    async uploadImage(id: string, formData: FormData): Promise<Boolean> {
       try {
         const axios = await api.raw();
-        await axios.delete(apiUrl + '/patient/regiment/' + id + '/delete', {
+        const { data } = await axios.post(apiUrl + '/patient/' + id + '/uploadImage', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
             Authorization: `JWT ${agentStore.accessToken}`,
           },
         });
+        if (data) {
+          return true;
+        }
+        return false;
+      } catch (error: any) {
+        const message = error.response.data.message;
+        return false;
+      }
+    },
+    async deletePatient(id: string): Promise<boolean> {
+      try {
+        await api.delete(id);
         return true;
       } catch (error: any) {
         const message = error.response.data.message;
@@ -87,7 +110,7 @@ export const useRegimentStore = defineStore('regiment', {
     },
     localSearch(searchBy: SearchByType) {
       try {
-        const results: Regiment[] = [];
+        const results: Day[] = [];
         const objects = Object.values(this.all);
         if (this.filterQuery != '') {
           for (const object of objects) {
@@ -108,19 +131,19 @@ export const useRegimentStore = defineStore('regiment', {
   },
 
   getters: {
-    selected(state): Regiment | undefined {
+    selected(state): Day | undefined {
       return state.selectedId ? state.all[state.selectedId] : undefined;
     },
 
-    edited(state): Regiment | undefined {
+    edited(state): Day | undefined {
       return state.editedId ? state.all[state.editedId] : undefined;
     },
 
-    list(state): Regiment[] {
+    list(state): Day[] {
       return state.order.map((id) => state.all[id]);
     },
 
-    filteredList(state): Regiment[] {
+    filteredList(state): Day[] {
       if (state.filterQuery != '') return state.filteredIds.map((id) => state.all[id]);
       return this.list;
     },
