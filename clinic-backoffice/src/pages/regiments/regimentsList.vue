@@ -1,36 +1,34 @@
 <script setup lang="ts">
-import { mdiCartOutline, mdiMagnify } from '@mdi/js';
+import { mdiAccountMultiplePlus , mdiMagnify,mdiAccount  } from '@mdi/js';
 import { onBeforeMount, ref, onUnmounted } from 'vue';
 
-import { useOrderStore } from '@/stores/models/orders';
+import { useRegimentStore, useDaysStore } from '@/stores/models';
 import SectionMain from '@/vendor/Section/SectionMain.vue';
-import TableOrders from '@/components/Tables/TableOrders.vue';
+import TableRegiments from '@/components/Tables/TableRegiments.vue';
 import CardBox from '@/vendor/CardBox/CardBox.vue';
 import SectionTitleLineWithButton from '@/vendor/Section/SectionTitleLineWithButton.vue';
 import BaseButtons from '@/vendor/Base/BaseButtons.vue';
 import BaseButton from '@/vendor/Base/BaseButton.vue';
 import FormControl from '@/vendor/Form/FormControl.vue';
-import axios from 'axios';
 
-const store = useOrderStore();
+const store = useRegimentStore();
+const daysStore = useDaysStore();
 
 let searching = ref(false);
 const isLoading = ref(false);
-
-
-
 
 const reset = () => {
   store.filterQuery = '';
 };
 
 const search = () => {
-  store.localSearch('id');
+  store.localSearch('name');
 };
 
 onBeforeMount(async () => {
   isLoading.value = true; // Set loading to true while fetching data
   await store.fetchAll();
+  await daysStore.fetchAll();
   isLoading.value = false; // Set loading to false after the data has loaded
 });
 
@@ -48,14 +46,15 @@ const stopSearching = () => {
 </script>
 
 <template>
-  <SectionMain>
-    <SectionTitleLineWithButton :icon="mdiCartOutline" title="Orders" main>
+  <SectionMain dir="rtl">
+    <SectionTitleLineWithButton  :icon="mdiAccount" title="الأفواج" main>
       <BaseButtons type="justify-start lg:justify-end" no-wrap>
         <BaseButton
-          label="Create Order"
+          label="إضافة فوج"
           color="contrast"
-          to="/orders/new"
-          class="font-medium mr-2"
+          to="/regiments/new"
+          class="font-medium ml-2"
+          :icon="mdiAccountMultiplePlus "
         />
         <BaseButton
           :icon="mdiMagnify"
@@ -69,7 +68,7 @@ const stopSearching = () => {
     <FormControl
       v-if="searching"
       v-model="store.filterQuery"
-      placeholder="Search (ctrl+k)"
+      placeholder="البحث عن مريض"
       ctrl-k-focus
       transparent
       borderless
@@ -79,7 +78,7 @@ const stopSearching = () => {
     />
 
     <CardBox class="mb-6" has-table>
-      <TableOrders :orders="store.filteredList" :loading="isLoading" />
+      <TableRegiments :regiments="store.filteredList" :loading="isLoading" />
     </CardBox>
   </SectionMain>
 </template>

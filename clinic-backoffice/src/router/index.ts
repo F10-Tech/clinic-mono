@@ -1,34 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { useAgentStore } from '@/stores/models/agent';
-import OrdersPage from '@/pages/orders/ordersPage.vue';
 
 const routes = [
-  {
-    meta: {
-      title: 'Services',
-      requiresAuth: true,
-    },
-    path: '/services',
-    name: 'services',
-    component: () => import('@/pages/services/servicePage.vue'),
-    children: [
-      {
-        path: '',
-        name: 'services.index',
-        component: () => import('@/pages/services/servicesList.vue'),
-      },
-      {
-        path: 'new',
-        name: 'services.new',
-        component: () => import('@/pages/services/servicesNew.vue'),
-      },
-      {
-        path: 'edit/:id',
-        name: 'services.edit',
-        component: () => import('@/pages/services/servicesEdit.vue'),
-      },
-    ],
-  },
   {
     meta: {
       title: 'Patients',
@@ -99,28 +72,27 @@ const routes = [
   },
   {
     meta: {
-      title: 'Orders',
+      title: 'Regiments',
+      requiresAuth: true,
     },
-    path: '/orders',
-    name: 'orders',
-    // ...
-
-      component: OrdersPage,
+    path: '/regiments',
+    name: 'regiments',
+    component: () => import('@/pages/regiments/regimentsPage.vue'),
     children: [
       {
         path: '',
-        name: 'orders.index',
-        component: () => import('@/pages/orders/OrdersList.vue'),
+        name: 'regiments.index',
+        component: () => import('@/pages/regiments/regimentsList.vue'),
       },
       {
-        path: 'new',
-        name: 'orders.new',
-        component: () => import('@/pages/orders/OrdersNew.vue'),
+        path: 'regiments',
+        name: 'regiments.new',
+        component: () => import('@/pages/regiments/regimentsList.vue'),
       },
       {
         path: 'edit/:id',
-        name: 'orders.edit',
-        component: () => import('@/pages/orders/OrdersEdit.vue'),
+        name: 'regiments.edit',
+        component: () => import('@/pages/regiments/regimentsEdit.vue'),
       },
     ],
   },

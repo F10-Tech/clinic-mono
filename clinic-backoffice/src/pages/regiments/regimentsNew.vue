@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import {mdiContentSaveAll, mdiDelete, mdiAccountMultiplePlus, mdiMedicalBag} from '@mdi/js';
 import { ref, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAgentStore, useStyleStore, useDiseasesStore, useRegimentStore, useCityStore, usePatientsStore, useStateStore } from '@/stores';
@@ -141,7 +140,7 @@ const formatt = (date) => {
 
 <template>
   <SectionMain>
-    <SectionTitleLineWithButton :icon="mdiAccountMultiplePlus" dir="rtl" title="إضافة مريض" main />
+    <SectionTitleLineWithButton dir="rtl" title="إضافة مريض" main />
     <CardBox dir="rtl" form @submit.prevent="submit">
       <div class="flex">
         <FormField  label="رقم الهاتف" class="ml-3 w-1/2">
@@ -228,8 +227,8 @@ const formatt = (date) => {
             /> 
           </FormField>
         </div>
-        <div dir="rtl" class="w-full h-full p-4 dark:bg-slate-900 bg-slate-100 mb-4 rounded">
-          <SectionTitleLineWithButton dir="rtl" :icon="mdiMedicalBag" title="أمراض أخرى"  />
+        <div dir="rtl" class="w-full h-full p-4 bg-slate-900 mb-4 rounded">
+          <div class=" text-2xl mb-4 font-bold "> أمراض اخرى:</div>
           <FormCheckRadioGroup
             v-model="patient.other_diseases"
             name="sample-checkbox"
@@ -251,8 +250,8 @@ const formatt = (date) => {
 
       <BaseDivider />
 
-      <BaseButtons class="justify-end">
-        <BaseButton :icon="mdiContentSaveAll" class=" w-full" type="submit" color="success" label="حفظ" @click="submit" />
+      <BaseButtons dir="rtl" class="justify-end">
+        <BaseButton class=" w-full" type="submit" color="success" label="حفظ" @click="submit" />
       </BaseButtons>
     </CardBox>
     <NotificationBar

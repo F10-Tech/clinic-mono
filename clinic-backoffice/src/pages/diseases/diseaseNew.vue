@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import {mdiContentSaveAll, mdiDelete, mdiClipboardList, mdiMedicalBag} from '@mdi/js';
+
 import { ref, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAgentStore, useDiseasesStore} from '@/stores';
@@ -65,7 +67,7 @@ const formatt = (date) => {
 
 <template>
   <SectionMain>
-    <SectionTitleLineWithButton dir="rtl" title="إضافة مرض" main />
+    <SectionTitleLineWithButton :icon="mdiMedicalBag" dir="rtl" title="إضافة مرض" main />
     <CardBox dir="rtl" form @submit.prevent="submit">
       <div class="flex">
         <FormField  label=" إسم المرض" class="ml-3 w-full">
@@ -80,7 +82,7 @@ const formatt = (date) => {
       <BaseDivider />
 
       <BaseButtons dir="rtl" class="justify-end">
-        <BaseButton class=" w-full" type="submit" color="success" label="حفظ" @click="submit" />
+        <BaseButton :icon="mdiContentSaveAll" class=" w-full" type="submit" color="success" label="حفظ" @click="submit" />
       </BaseButtons>
     </CardBox>
     <NotificationBar

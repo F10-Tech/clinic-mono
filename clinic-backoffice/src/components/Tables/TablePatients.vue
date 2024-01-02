@@ -1,14 +1,23 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { mdiTextBoxEditOutline } from '@mdi/js';
+import { mdiTextBoxEditOutline,mdiCashFast } from '@mdi/js';
 import { LoopingRhombusesSpinner } from 'epic-spinners';
 import { format } from 'date-fns';
+import { useOrdersStore } from '@/stores/models';
 
 import type { Patient } from '@/models';
 import BaseLevel from '@/vendor/Base/BaseLevel.vue';
 import BaseButtons from '@/vendor/Base/BaseButtons.vue';
 import BaseButton from '@/vendor/Base/BaseButton.vue';
 import PillTagOrderStatus from '@/components/PillTag/PillTagOrderStatus.vue';
+import PillTagNumber from '@/vendor/PillTag/PillTagNumber.vue';
+import type { Order } from '@/models';
+import CardBoxModal from '@/vendor/CardBox/CardBoxModal.vue';
+import FormField from '@/vendor/Form/FormField.vue';
+import FormControl from '@/vendor/Form/FormControl.vue';
+
+const orderStore = useOrdersStore();
+
 
 function formatDate(value) {
   if (value) {
@@ -56,6 +65,29 @@ const pagesList = computed(() => {
 
   return pagesList;
 });
+
+const order = ref<Order>({
+  patient: '',
+  amount: 0, 
+} as unknown as Order);
+
+const selectId = (id: string) => {
+  console.log(id);
+  order.value.patient = id;
+  // store.editedId = id;
+  modalActive.value = true;
+};
+const modalActive = ref(false);
+
+const createOrder = async () => {
+  const isDeleted = await orderStore.create(order.value);
+  if (isDeleted) {
+      // relod page
+      window.location.reload();
+  } else {
+    alert(' خطأ أثناء دفع المستحقات ');
+  }
+};
 </script>
 
 <template>
@@ -63,30 +95,50 @@ const pagesList = computed(() => {
     <looping-rhombuses-spinner :animation-duration="1500" :rhombus-size="20" color="#fff" />
   </div>
   <div  v-else>
+
+    <CardBoxModal
+        v-model="modalActive"
+        title="دفع المستحقات   "
+        button-label="دفع"
+        button-cancel-label="الغاء"
+        button="success"
+        has-cancel
+        @confirm="createOrder"
+      >
+      <FormField  label=" المبلغ" class=" ml-3">
+            <FormControl
+              v-model="order.amount"
+              type="number"
+              placeholder="المبلغ المدفوع"
+              :style="{ direction: 'rtl' }"
+            />
+        </FormField>
+    </CardBoxModal>
     <table>
       <thead>
         <tr>
-          <th class="text-center">رقم الهاتف</th>
-          <th class="text-center">الأسم</th>
-          <th class="text-center">العنوان</th>
-          <th class="text-center">الفوج</th>
-          <th class="text-center">الطبيب</th>
-          <th class="text-center">المرض</th>
-          <th class="text-center">تاريخ العملية</th>
-          <th class="text-center">الحصص</th>
-          <th class="text-center">الحالة</th>
+          <th class="text-start">رقم الهاتف</th>
+          <th class="text-start">الأسم</th>
+          <th class="text-start">العنوان</th>
+          <th class="text-start">الفوج</th>
+          <th class="text-start">الطبيب</th>
+          <th class="text-start">المرض</th>
+          <th class="text-start">الباقي</th>
+          <th class="text-start">الحصص المدفوعة</th>
+          <th class="text-start"> دفع المستحقات</th>
+          <th class="text-start">الحالة</th>
           <th />
         </tr>
       </thead>
       <tbody>
         <tr v-for="patient in patients" :key="patient.id">
-          <td data-label="الهاتف" class="">
+          <td data-label="الهاتف" class="text-start">
             {{ patient.phone }}
           </td>
           <td data-label="الأسم" :class="{ 'rtl-text': isArabic(patient.name) }">
             {{ patient.name }}
           </td>
-          <td data-label="العنوان">
+          <td data-label="العنوان" class="w-44" :class="{ 'rtl-text': isArabic(patient.city?.state) }" >
             {{ patient.city?.state }} - {{ patient.city?.name }} 
           </td>
           <td data-label="الفوج" :class="{ 'rtl-text': isArabic(patient.regiment?.name) }">
@@ -104,12 +156,27 @@ const pagesList = computed(() => {
               {{ patient.disease?.name }}
             </h2>
           </td>
-          <td data-label="تاريخ إجراء العملية" class=" text-center " >
-            {{formatDate(patient.medical_operation_date)}}
+
+          <td data-label=" الباقي " dir="rtr" class="text-start font-bold" >
+            {{patient.rest}} دج
           </td>
-          <td data-label="الحصص المتبقية" class="text-center text-xl">
-            {{ patient.number_of_days }}
+          
+          <td v-if="patient.sessions > 0" data-label="الحصص المدفوعة" dir="ltr" class="text-center text-xl w-40">
+            <PillTagNumber color="success" :label="patient.sessions" />
           </td>
+          <td v-else data-label="دفع" dir="ltr" class="text-center text-xl">
+            <PillTagNumber color="danger" :label="patient.sessions" />
+          </td>
+          
+          <td  data-label="دفع المستحقات"  dir="rtr" class="text-center text-xl w-40">
+            <div v-if="patient.rest > 0">
+              <BaseButton :icon="mdiCashFast" label="دفع" small color="info" @click="selectId(patient.id)" />
+            </div>
+            <div v-else>
+              <BaseButton :icon="mdiCashFast" label="تم دفع " small color="success" disabled />
+            </div>
+          </td>
+          
           <td data-label="الحالة" class="lg:justify-center items-center flex">
             <!-- working on it -->
             <PillTagOrderStatus :color="patient.status" :label="patient.status" />

@@ -4,7 +4,7 @@ import { mdiTextBoxEditOutline, mdiPencil, mdiDeleteForever  } from '@mdi/js';
 import { LoopingRhombusesSpinner } from 'epic-spinners';
 import { format } from 'date-fns';
 import {  usePresenceStore, useAgentStore, usePatientsStore } from '@/stores/models';
-import type { Presence } from '@/models';
+import type { Regiment } from '@/models';
 import BaseLevel from '@/vendor/Base/BaseLevel.vue';
 import BaseButtons from '@/vendor/Base/BaseButtons.vue';
 import BaseButton from '@/vendor/Base/BaseButton.vue';
@@ -20,16 +20,17 @@ function formatDate(value) {
   }
 }
 const props = defineProps({
-  presences: { type: Array<Presence>, default: [], required: true },
+  regiments: { type: Array<Regiment>, default: [], required: true },
   isLoading: { type: Boolean, default: false },
 });
+
 
 const isArabic = (text) => {
   const arabicRegex = /[\u0600-\u06FF]/;
   return arabicRegex.test(text);
 };
 
-const items = computed(() => props.presences);
+const items = computed(() => props.regiments);
 
 const perPage = ref(11);
 
@@ -53,21 +54,7 @@ const pagesList = computed(() => {
 
   return pagesList;
 });
-const presence = ref<Presence>({
-  id: '',
-} as unknown as Presence);
 
-// const createPresence = async (id: string) => {
-//   presence.value.id = id;
-//   const isDeleted = await store.create(presence.value);
-//   if (isDeleted) {
-//       // relod page
-//       window.location.reload();
-//   } 
-//   else {
-//     alert('حدث خطأ أثناء تسجيل الحضور');
-//   }
-// };
 
 const selectId = (id: string) => {
   store.editedId = id;
@@ -75,16 +62,6 @@ const selectId = (id: string) => {
 };
 const modalActive = ref(false);
 
-const deletePresences = async () => {
-  console.log(store.editedId);
-  const isDeleted = await store.delete(store.editedId!);
-  if (isDeleted) {
-      // relod page
-      window.location.reload();
-  } else {
-    alert('حدث خطأ أثناء حذف الحضور');
-  }
-};
 
 </script>
 
@@ -93,62 +70,32 @@ const deletePresences = async () => {
     <looping-rhombuses-spinner :animation-duration="1500" :rhombus-size="20" color="#fff" />
   </div>
   <div v-else>
-
-    <CardBoxModal
-        v-model="modalActive"
-        title="هل تريد حذف المرض؟"
-        button-label="حذف"
-        button-cancel-label="لا"
-        button="danger"
-        has-cancel
-        @confirm="deletePresences"
-      />
     <table>
       <thead>
         <tr>
           <th class="text-center">الأسم</th>
-          <th class="text-center">اليوم</th>
-          <th class="text-center">التاريخ</th>
+          <th class="text-center">الفترة</th>
           <th />
         </tr>
       </thead>
       <tbody>
-        <tr v-for="presence in presences" :key="presence.id">
+        <tr v-for="regiment in regiments" :key="regiment.id">
           <td data-label="الإسم" class=" text-center">
-            {{ presence.patient }}
+            {{ regiment.name }}
           </td>
-          <td data-label="اليوم" class="text-center">
-            <div v-if="presence.day == 'Thursday' " class="mx-2">
-                      الخميس 
-              </div>
-              <div v-if="presence.day == 'Friday' " class="mx-2">
-                      الجمعة 
-              </div>
-              <div v-if="presence.day == 'Saturday' " class="mx-2">
-                      السبت 
-              </div>
-              <div v-if="presence.day == 'Sunday' " class="mx-2">
-                      الأحد 
-              </div>
-              <div v-if="presence.day == 'Monday' " class="mx-2">
-                      الإثنين 
-              </div>
-              <div v-if="presence.day == 'Tuesday' " class="mx-2">
-                      الثلاثاء 
-              </div>
-              <div v-if="presence.day == 'Wednesday' " class="mx-2">
-                      اللإربعاء 
-              </div>
+          <td data-label="الفترة" class=" text-center">
+            <div v-if="regiment.period == 'EVENING' ">
+              مسائي
+            </div>  
+            <div v-else-if="regiment.period == 'MORNING' ">
+              صباحي
+            </div>
           </td>
-          <td data-label="الأسم" class="text-center">
-            {{  formatDate(presence.created_at)}} 
-          </td>
-
-          <td class="before:hidden lg:w-1 whitespace-nowrap"> 
+          <td class="before:hidden lg:w-1 whitespace-nowrap">
             <BaseButtons type="justify-start lg:justify-end" no-wrap>
-              <BaseButton color="danger" :icon="mdiDeleteForever " small @click="selectId(presence.id)" />
+              <BaseButton :icon="mdiTextBoxEditOutline" small :to="'/regiments/edit/' + regiment.id" />
             </BaseButtons>
-          </td> 
+          </td>
         </tr>
       </tbody>
     </table>

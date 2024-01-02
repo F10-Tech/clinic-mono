@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from .models import Patient
 from core.permissions import IsServiceAdmin
-import datetime
+from datetime import datetime
 from rest_framework import status
 
 @api_view(['GET'])
@@ -24,28 +24,38 @@ def DetailPatient(request, pk):
 @api_view(['GET'])
 # @permission_classes([IsAuthenticated])
 def ListOfPatientByRegiment(request):
+    current_datetime = datetime.now()
+    hour = current_datetime.hour - 1
     regiments = Regiment.objects.all()
     for regiment in regiments:
-        # print(datetime.datetime.today().strftime("%A"))
-        for day in regiment.days.all():
-            if day.name == datetime.datetime.today().strftime("%A"):
-                print(day.name)
-                patients = regiment.patient_set.all()
-                serializer = ListPatientByRegimentSerializer(patients, many=True)
-                return Response(serializer.data)
+        if regiment.period == 'MORNING' and hour <= 12:
+            print('MORNING')
+            for day in regiment.days.all():
+                if day.name == datetime.today().strftime("%A"):
+                    patients = regiment.patient_set.all()
+                    serializer = ListPatientByRegimentSerializer(patients, many=True)
+                    return Response(serializer.data)
+        elif regiment.period == 'EVENING' and hour > 12:
+            for day in regiment.days.all():
+                if day.name == datetime.today().strftime("%A"):
+                    patients = regiment.patient_set.all()
+                    serializer = ListPatientByRegimentSerializer(patients, many=True)
+                    return Response(serializer.data)
     return Response(status.HTTP_400_BAD_REQUEST)
-
-    # patient = Patient.objects.filter(regiment=pk)
-    # serializer = DetailPatientSerializer(patient, many=True)
-    # return Response(serializer.data)
 
 @api_view(['POST'])
 # @permission_classes([IsAuthenticated])
 def CreatePatient(request):
+    if request.data['price'] != None:
+        price = Price.objects.get(id=request.data['price'])
+        request.data['rest'] = price.price * request.data['number_of_days']
+
     serializer = CreatePatientSerializer(data=request.data)
+
     if serializer.is_valid():
-        serializer.save()
-    return Response(serializer.data)
+            serializer.save()
+            return Response(serializer.data)
+    return Response(status.HTTP_400_BAD_REQUEST)
 
 @api_view(['DELETE'])
 # @permission_classes([IsAuthenticated])
@@ -78,7 +88,7 @@ def UpdateImgs(request, pk):
 # @permission_classes([IsAuthenticated])
 def ListOfPresence(request, pk):
     if pk == 'today':
-        presence = Presence.objects.filter(created_at__date=datetime.datetime.today())
+        presence = Presence.objects.filter(created_at__date=datetime.today())
 
 
     else:
@@ -90,9 +100,6 @@ def ListOfPresence(request, pk):
 @api_view(['POST'])
 # @permission_classes([IsAuthenticated])
 def CreatePresence(request):
-    patient = Patient.objects.get(id=request.data['patient'])
-    patient.number_of_days = patient.number_of_days - 1
-    patient.save()
     serializer = CreatePresenceSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
@@ -103,10 +110,7 @@ def CreatePresence(request):
 # @permission_classes([IsAuthenticated])
 def DeletePresence(request, pk):
     presence = Presence.objects.get(id=pk)
-    patient = Patient.objects.get(id=presence)
     serializer = PresenceSerializer(presence, many=False)
-    patient.number_of_days = patient.number_of_days + 1
-    patient.save()
     presence.delete()
     return Response(serializer.data)
 
@@ -209,4 +213,21 @@ def DeleteRegiment(request, pk):
     regiment = Regiment.objects.get(id=pk)
     serializer = RegimentSerializer(regiment, many=False)
     regiment.delete()
+    return Response(serializer.data)
+
+@api_view(['PATCH'])
+# @permission_classes([IsAuthenticated])
+def UpdateRegiment(request, pk):
+    regiment = Regiment.objects.get(id=pk)
+    serializer = RegimentSerializer(regiment, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+# @permission_classes([IsAuthenticated])
+def ListOfDays(request):
+    days = Day.objects.all()
+    serializer = DaySerializer(days, many=True)
     return Response(serializer.data)

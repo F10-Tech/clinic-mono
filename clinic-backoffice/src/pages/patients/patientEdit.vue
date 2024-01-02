@@ -1,10 +1,12 @@
 <script setup lang="ts">
+import {mdiContentSaveAll, mdiDelete, mdiClipboardList, mdiMedicalBag, mdiBookEdit} from '@mdi/js';
 import { LoopingRhombusesSpinner } from 'epic-spinners';
 import { ref, onUnmounted, onBeforeMount } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { usePatientsStore, useCityStore ,useStateStore,  useAgentStore, useStyleStore, useDiseasesStore, useRegimentStore } from '@/stores';
 import type { Patient } from '@/models/patient';
 import SectionMain from '@/vendor/Section/SectionMain.vue';
+import PillTag from '@/vendor/PillTag/PillTag.vue';
 import CardBox from '@/vendor/CardBox/CardBox.vue';
 import FormField from '@/vendor/Form/FormField.vue';
 import FormControl from '@/vendor/Form/FormControl.vue';
@@ -117,6 +119,7 @@ const patient = ref<Patient>({
   doctor: store.edited?.doctor,
   regiment: store.edited?.regiment?.id,
   city: store.edited?.city?.id,
+  rest: store.edited?.rest,
 } as unknown as Patient);
 isLoading.value = false;
 onUnmounted(() => {
@@ -192,7 +195,17 @@ const formatt = (date) => {
 
   <div v-else>
     <SectionMain  v-if="patient">
-      <SectionTitleLineWithButton dir="rtl" title="الملف الشخصي للمريض" main />
+      <SectionTitleLineWithButton :icon="mdiBookEdit" dir="rtl" title="الملف الشخصي للمريض" main >
+        <div class="flex">
+          <h1 class="mx-4 text-2xl">
+          الباقي :
+          </h1>
+        
+          
+          <PillTag  class="text-2xl rounded-sm"   color="danger" :label="`${patient.rest} دج`" />
+        </div>
+
+      </SectionTitleLineWithButton>
       <CardBoxModal
         v-model="modalActive"
         title="Please confirm the delete"
@@ -291,16 +304,19 @@ const formatt = (date) => {
             /> 
           </FormField>
         </div>
-        <div  class="w-full h-full p-4 bg-slate-900 mb-4 rounded">
-          <div class=" text-2xl mb-4 font-bold "> أمراض اخرى:</div>
+        <div  class="w-full h-full p-4 dark:bg-slate-900 bg-slate-100 mb-4 rounded">
+          <SectionTitleLineWithButton dir="rtl" :icon="mdiMedicalBag" title="أمراض أخرى"  />
+          <!-- <div class=" text-2xl mb-4 font-bold "> أمراض اخرى:</div> -->
           <FormCheckRadioGroup
             v-model="patient.other_diseases"
             name="sample-checkbox"
             :options="diseases"
           />
         </div>
-        <div class="w-full h-full p-4 bg-slate-900 mb-4 rounded">
-          <div class=" text-2xl mb-4 font-bold "> الحضور:</div>
+        <div class="w-full h-full p-4 dark:bg-slate-900 bg-slate-100 mb-4 rounded">
+          <SectionTitleLineWithButton :icon="mdiClipboardList" dir="rtl" title=" الحضور:" />
+
+          <!-- <div class=" text-2xl mb-4 font-bold "> الحضور:</div> -->
           <div class=" ml-4 mb-2 text-xl flex" v-for="one in patient.presence" :key="one.id">
               - <div v-if="one.day == 'Thursday' " class="mx-2">
                       الخميس 
@@ -348,8 +364,8 @@ const formatt = (date) => {
 
         <BaseButtons class="flex justify-between">
           
-          <BaseButton class="mr-0 lg:ml-4  lg:w-[77%] w-full" type="submit" color="success" label="حفظ" @click="submit" />
-          <BaseButton class=" lg:w-[20%] w-full" color="danger" label="حذف" @click="modalActive = true" />
+          <BaseButton :icon="mdiContentSaveAll" class="mx-0 lg:ml-4  lg:w-[77%] w-full" type="submit" color="success" label="حفظ" @click="submit" />
+          <BaseButton :icon="mdiDelete" class=" lg:w-[20%] w-full" color="danger" label="حذف" @click="modalActive = true" />
         </BaseButtons>
       </CardBox>
       <NotificationBar

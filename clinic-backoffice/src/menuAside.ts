@@ -1,31 +1,37 @@
 import {
-  mdiAccountGroupOutline,
-  mdiAccountOutline ,
-  mdiClipboardListOutline,
-  mdiClipboardTextMultipleOutline,
+  mdiAccountGroup,
+  mdiClipboardList ,
+  mdiReceiptTextPlus,
   mdiListBox ,
+  mdiAccount,
+  mdiMedicalBag,
 } from '@mdi/js';
 
 export default [
   {
     to: '/patients',
     label: 'المرضى',
-    icon: mdiAccountOutline ,
+    icon: mdiAccount ,
   },
   {
     to: '/records',
-    label: 'الحضور',
-    icon: mdiListBox,
+    label: 'تسجيل الحضور',
+    icon: mdiReceiptTextPlus,
+  },
+  {
+    to: '/records/presences',
+    label: 'لإحة الحضور',
+    icon: mdiClipboardList,
   },
   {
     to: '/diseases',
     label: 'الأمراض',
-    icon: mdiClipboardTextMultipleOutline,
+    icon: mdiMedicalBag,
   },
   {
-    to: '/regiment',
+    to: '/regiments',
     label: 'الأفواج',
-    icon: mdiAccountGroupOutline ,
+    icon: mdiAccountGroup ,
   },
   // {
   //   to: '/clients',
