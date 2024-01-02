@@ -96,9 +96,6 @@ def ListOfPresence(request, pk):
 @api_view(['POST'])
 # @permission_classes([IsAuthenticated])
 def CreatePresence(request):
-    patient = Patient.objects.get(id=request.data['patient'])
-    patient.number_of_days = patient.number_of_days - 1
-    patient.save()
     serializer = CreatePresenceSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
@@ -109,10 +106,7 @@ def CreatePresence(request):
 # @permission_classes([IsAuthenticated])
 def DeletePresence(request, pk):
     presence = Presence.objects.get(id=pk)
-    patient = Patient.objects.get(id=presence)
     serializer = PresenceSerializer(presence, many=False)
-    patient.number_of_days = patient.number_of_days + 1
-    patient.save()
     presence.delete()
     return Response(serializer.data)
 

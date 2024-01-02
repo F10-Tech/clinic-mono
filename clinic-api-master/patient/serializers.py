@@ -77,6 +77,18 @@ class ListPatientByRegimentSerializer(serializers.ModelSerializer):
     disease = serializers.SerializerMethodField('get_disease_data')
     presence = serializers.SerializerMethodField('get_presence_data')
     checkout = serializers.SerializerMethodField('get_checkout_data')
+    sessions = serializers.SerializerMethodField('get_sessions_data')
+
+    def get_sessions_data(self, obj):
+        presence = Presence.objects.filter(patient=obj.id)
+        if obj.price != None:
+            price = Price.objects.get(id = obj.price.id)
+            if presence.count() == 0 and obj.rest == 0:
+                return obj.number_of_days
+            if presence.count() > 0:
+                return math.floor( ( obj.number_of_days - (obj.rest / price.price ))  - presence.count())
+        return 0
+
 
     def get_checkout_data(self, obj):
         presence = Presence.objects.filter(patient=obj.id, created_at__date = datetime.datetime.today().date() )
@@ -124,7 +136,7 @@ class ListPatientByRegimentSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Patient
-        fields = '__all__'
+        fields = ['id', 'name', 'age', 'phone', 'number_of_days', 'regiment', 'disease', 'city', 'rest', 'sessions', 'status', 'checkout', 'presence']
 
 class FullCitySerializer(serializers.ModelSerializer):
 

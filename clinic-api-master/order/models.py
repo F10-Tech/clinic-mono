@@ -12,7 +12,7 @@ class Order(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.SET_NULL, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    total = models.FloatField(default=0)
+    amount = models.FloatField(default=0)
     id = ShortUUIDField(primary_key=True, length=11, max_length=11,blank=False, editable=False)
 
     class Meta:
