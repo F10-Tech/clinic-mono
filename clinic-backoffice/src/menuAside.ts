@@ -2,7 +2,7 @@ import {
   mdiAccountGroup,
   mdiClipboardList ,
   mdiReceiptTextPlus,
-  mdiListBox ,
+  mdiCashClock ,
   mdiAccount,
   mdiMedicalBag,
 } from '@mdi/js';
@@ -32,6 +32,11 @@ export default [
     to: '/regiments',
     label: 'الأفواج',
     icon: mdiAccountGroup ,
+  },
+  {
+    to: '/orders',
+    label: 'الدفع',
+    icon: mdiCashClock ,
   },
   // {
   //   to: '/clients',
