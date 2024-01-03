@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {mdiContentSaveAll, mdiDelete, mdiClipboardList, mdiMedicalBag, mdiBookEdit} from '@mdi/js';
 import { LoopingRhombusesSpinner } from 'epic-spinners';
-import { ref, onUnmounted, onBeforeMount } from 'vue';
+import { ref, onUnmounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { usePatientsStore, useCityStore ,useStateStore,  useAgentStore, useStyleStore, useDiseasesStore, useRegimentStore } from '@/stores';
 import type { Patient } from '@/models/patient';
@@ -21,20 +21,6 @@ import NotificationBar from '@/vendor/NotificationBar/NotificationBar.vue';
 import { format } from 'date-fns';
 import VueDatePicker from '@vuepic/vue-datepicker';
 
-
-
-function formatDate(value) {
-  if (value) {
-    return format(new Date(value), 'yyyy-MM-dd');
-  }
-}
-
-onBeforeMount(async () => {
-  isLoading.value = true; // Set loading to true while fetching data
-  // cityStore.filterQuery = patient.value.city.state;
-  isLoading.value = false; // Set loading to false after the data has loaded
-});
-
 const store = usePatientsStore();
 const agent = useAgentStore();
 const styleStore = useStyleStore();
@@ -43,7 +29,17 @@ const regimentStore = useRegimentStore();
 const statesStore = useStateStore();
 const cityStore = useCityStore();
 
-
+const formatt = (date) => {
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+}
+function formatDate(value) {
+  if (value) {
+    return format(new Date(value), 'yyyy-MM-dd');
+  }
+}
 const states = ref(
   statesStore.list.map((state) => {
     return {
@@ -76,13 +72,6 @@ const cities = ref(
       };
   })
 );
-
-onUnmounted(() => {
-  cityStore.filterQuery = '';
-  cityStore.selectedId = undefined;
-  cityStore.unsetFilter();
-});
-
 const search = () => {
   cityStore.localSearch('state');
   cities.value = cityStore.filteredList.map((city) => {
@@ -92,39 +81,6 @@ const search = () => {
       };
   })
 };
-
-const route = useRoute();
-const router = useRouter();
-
-const modalActive = ref(false);
-const isLoading = ref(true);
-
-const img_1 = ref<File | undefined>(undefined);
-const img_2 = ref<File | undefined>(undefined);
-
-
-
-store.editedId = route.params.id.toString();
-const patient = ref<Patient>({
-  name: store.edited?.name,
-  phone: store.edited?.phone,
-  age: store.edited?.age,
-  number_of_days: store.edited?.number_of_days,
-  disease: store.edited?.disease?.id,
-  other_diseases: store.edited?.other_diseases,
-  img_1: store.edited?.img_1,
-  img_2: store.edited?.img_2,
-  presence: store.edited?.presence,
-  medical_operation_date: store.edited?.medical_operation_date,
-  doctor: store.edited?.doctor,
-  regiment: store.edited?.regiment?.id,
-  city: store.edited?.city?.id,
-  rest: store.edited?.rest,
-} as unknown as Patient);
-isLoading.value = false;
-onUnmounted(() => {
-  store.editedId = undefined;
-});
 const deletePatient = async () => {
   const isDeleted = await store.deletePatient(store.editedId!);
   if (isDeleted) {
@@ -141,8 +97,10 @@ const deletePatient = async () => {
   }
 };
 const submit = async () => {
-  
-  patient.value.medical_operation_date = formatDate(patient.value.medical_operation_date);
+  const dateString = formatDate(patient.value.medical_operation_date)?.toString();
+  if (dateString !== undefined) {
+      patient.value.medical_operation_date = dateString;
+  }
   const isUpdated = await store.patch(
     store.editedId!,
     patient.value,
@@ -165,27 +123,51 @@ const submit = async () => {
 const BackHim = () => {
   formStatusCurrent.value = 0;
 };
-
-const formStatusWithHeader = ref(true);
-
-const formStatusCurrent = ref(0);
-
-const formStatusOptions = ['info', 'success', 'danger', 'warning'];
-
 const formStatusSubmit = () => {
   formStatusCurrent.value = formStatusOptions[formStatusCurrent.value + 1]
     ? formStatusCurrent.value + 1
     : 0;
 };
+onUnmounted(() => {
+  cityStore.filterQuery = '';
+  cityStore.selectedId = undefined;
+  cityStore.unsetFilter();
+  store.editedId = undefined;
+});
 
-const formatt = (date) => {
-  const day = date.getDate();
-  const month = date.getMonth() + 1;
-  const year = date.getFullYear();
 
-  return `${day}/${month}/${year}`;
-}
 
+const route = useRoute();
+const router = useRouter();
+
+const modalActive = ref(false);
+const isLoading = ref(true);
+
+const img_1 = ref<File | undefined>(undefined);
+const img_2 = ref<File | undefined>(undefined);
+
+store.editedId = route.params.id.toString();
+const patient = ref<Patient>({
+  name: store.edited?.name,
+  phone: store.edited?.phone,
+  age: store.edited?.age,
+  number_of_days: store.edited?.number_of_days,
+  disease: store.edited?.disease?.id,
+  other_diseases: store.edited?.other_diseases,
+  img_1: store.edited?.img_1,
+  img_2: store.edited?.img_2,
+  presence: store.edited?.presence,
+  medical_operation_date: store.edited?.medical_operation_date,
+  doctor: store.edited?.doctor,
+  regiment: store.edited?.regiment?.id,
+  city: store.edited?.city?.id,
+  rest: store.edited?.rest,
+} as unknown as Patient);
+
+const formStatusWithHeader = ref(true);
+const formStatusCurrent = ref(0);
+const formStatusOptions = ['info', 'success', 'danger', 'warning'];
+isLoading.value = false;
 </script>
 
 <template >

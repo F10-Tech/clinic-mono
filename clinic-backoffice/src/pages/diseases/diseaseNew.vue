@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import {mdiContentSaveAll, mdiDelete, mdiClipboardList, mdiMedicalBag} from '@mdi/js';
-
-import { ref, onUnmounted } from 'vue';
+import {mdiContentSaveAll, mdiMedicalBag} from '@mdi/js';
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAgentStore, useDiseasesStore} from '@/stores';
 import type { Disease } from '@/models';
@@ -15,16 +14,14 @@ import BaseButtons from '@/vendor/Base/BaseButtons.vue';
 import NotificationBar from '@/vendor/NotificationBar/NotificationBar.vue';
 import SectionTitleLineWithButton from '@/vendor/Section/SectionTitleLineWithButton.vue';
 
-
-
-
-
 const agentStore = useAgentStore();
 const router = useRouter();
 const store = useDiseasesStore();
 
+const formStatusCurrent = ref(0);
+const formStatusOptions = ['info', 'success', 'danger', 'warning'];
 const disease = ref<Disease>({} as unknown as Disease);
-
+const formStatusWithHeader = ref(true);
 
 const submit = async () => {
   const isCreated = await store.create(disease.value);
@@ -44,25 +41,11 @@ const submit = async () => {
 const BackHim = () => {
   formStatusCurrent.value = 0;
 };
-
-const formStatusWithHeader = ref(true);
-
-const formStatusCurrent = ref(0);
-
-const formStatusOptions = ['info', 'success', 'danger', 'warning'];
-
 const formStatusSubmit = () => {
   formStatusCurrent.value = formStatusOptions[formStatusCurrent.value + 1]
     ? formStatusCurrent.value + 1
     : 0;
 };
-const formatt = (date) => {
-  const day = date.getDate();
-  const month = date.getMonth() + 1;
-  const year = date.getFullYear();
-
-  return `${day}/${month}/${year}`;
-}
 </script>
 
 <template>

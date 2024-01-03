@@ -8,7 +8,7 @@ export class Patient {
     name!: string;
     created_at!: Date;
     updated_at!: Date;
-    medical_operation_date!: Date;
+    medical_operation_date!: string;
     doctor!: string;
     number_of_days!: number;
     regiment!: Regiment;

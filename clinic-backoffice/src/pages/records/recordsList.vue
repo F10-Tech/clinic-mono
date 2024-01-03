@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { mdiReceiptTextPlus, mdiMagnify, mdiClipboardList } from '@mdi/js';
 import { onBeforeMount, ref, onUnmounted } from 'vue';
-import { useAgentStore, useRecordStore } from '@/stores/models';
+import { useRecordStore } from '@/stores/models';
 import SectionMain from '@/vendor/Section/SectionMain.vue';
 import TableRecordPresences from '@/components/Tables/TableRecordPresences.vue';
 import CardBox from '@/vendor/CardBox/CardBox.vue';
@@ -11,7 +11,6 @@ import BaseButton from '@/vendor/Base/BaseButton.vue';
 import FormControl from '@/vendor/Form/FormControl.vue';
 
 const store = useRecordStore();
-const agent = useAgentStore();
 
 
 let searching = ref(false);
@@ -20,37 +19,26 @@ const isLoading = ref(false);
 const reset = () => {
   store.filterQuery = '';
 };
-
 const search = () => {
   store.localSearch('name');
 };
-
-
-
-
-onBeforeMount(async () => {
-  isLoading.value = true; // Set loading to true while fetching data
-  await store.fetchAll();
-  console.log('store', store.all);
-  isLoading.value = false; // Set loading to false after the data has loaded
-});
-
-onUnmounted(() => {
-  store.filterQuery = '';
-  store.selectedId = undefined;
-  store.unsetFilter();
-});
 const stopSearching = () => {
   searching.value = false;
   store.filterQuery = '';
   store.selectedId = undefined;
   store.unsetFilter();
 };
-
-
-
-
-
+onBeforeMount(async () => {
+  isLoading.value = true;
+  await store.fetchAll();
+  console.log('store', store.all);
+  isLoading.value = false;
+});
+onUnmounted(() => {
+  store.filterQuery = '';
+  store.selectedId = undefined;
+  store.unsetFilter();
+});
 </script>
 
 <template>

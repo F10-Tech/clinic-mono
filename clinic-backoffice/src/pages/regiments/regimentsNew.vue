@@ -18,14 +18,6 @@ import VueDatePicker from '@vuepic/vue-datepicker';
 import FormCheckRadioGroup from '@/vendor/Form/FormCheckRadioGroup.vue';
 
 
-function formatDate(value) {
-  if (value) {
-    return format(new Date(value), 'yyyy-MM-dd');
-  }
-}
-
-
-
 const agentStore = useAgentStore();
 const router = useRouter();
 const store = usePatientsStore();
@@ -35,58 +27,11 @@ const styleStore = useStyleStore();
 const cityStore = useCityStore();
 const statesStore = useStateStore();
 
-const diseases = ref(
-  diseaseStore.list.map((disease) => {
-    return {
-      value: disease.id,
-      label: disease.name,
-    };
-  }),
-);
-
-const regiments = ref(
-  regimentStore.list.map((regiment) => {
-    return {
-      value: regiment.id,
-      label: regiment.name,
-    };
-  }),
-);
-const states = ref(
-  statesStore.list.map((regiment) => {
-    return {
-      value: regiment.id,
-      label: regiment.name,
-    };
-  }),
-);
-const cities = ref();
-
-const img_1 = ref(undefined);
-const img_2 = ref(undefined);
-
-const patient = ref<Patient>({
-  name: '',
-  phone: '',
-  age: 0,
-  number_of_days: 0,
-  medical_operation_date: '',
-  doctor: '',
-  regiment: 0,
-  disease: '',
-  city: '',
-  other_diseases: [],
-} as unknown as Patient);
-  
-
-
-
-onUnmounted(() => {
-  cityStore.filterQuery = '';
-  cityStore.selectedId = undefined;
-  cityStore.unsetFilter();
-});
-
+function formatDate(value) {
+  if (value) {
+    return format(new Date(value), 'yyyy-MM-dd');
+  }
+}
 const search = () => {
   cityStore.localSearch('state');
   cities.value = cityStore.filteredList.map((city) => {
@@ -96,9 +41,11 @@ const search = () => {
       };
   })
 };
-
 const submit = async () => {
-  patient.value.medical_operation_date = formatDate(patient.value.medical_operation_date);
+  const dateString = formatDate(patient.value.medical_operation_date)?.toString();
+  if (dateString !== undefined) {
+      patient.value.medical_operation_date = dateString;
+  }
   console.log(patient.value);
   const isCreated = await store.create(patient.value, img_1.value, img_2.value);
   if (isCreated) {
@@ -117,13 +64,6 @@ const submit = async () => {
 const BackHim = () => {
   formStatusCurrent.value = 0;
 };
-
-const formStatusWithHeader = ref(true);
-
-const formStatusCurrent = ref(0);
-
-const formStatusOptions = ['info', 'success', 'danger', 'warning'];
-
 const formStatusSubmit = () => {
   formStatusCurrent.value = formStatusOptions[formStatusCurrent.value + 1]
     ? formStatusCurrent.value + 1
@@ -136,6 +76,54 @@ const formatt = (date) => {
 
   return `${day}/${month}/${year}`;
 }
+const diseases = ref(
+  diseaseStore.list.map((disease) => {
+    return {
+      value: disease.id,
+      label: disease.name,
+    };
+  }),
+);
+const regiments = ref(
+  regimentStore.list.map((regiment) => {
+    return {
+      value: regiment.id,
+      label: regiment.name,
+    };
+  }),
+);
+const states = ref(
+  statesStore.list.map((regiment) => {
+    return {
+      value: regiment.id,
+      label: regiment.name,
+    };
+  }),
+);
+onUnmounted(() => {
+  cityStore.filterQuery = '';
+  cityStore.selectedId = undefined;
+  cityStore.unsetFilter();
+});
+
+const cities = ref();
+const img_1 = ref(undefined);
+const img_2 = ref(undefined);
+const patient = ref<Patient>({
+  name: '',
+  phone: '',
+  age: 0,
+  number_of_days: 0,
+  medical_operation_date: '',
+  doctor: '',
+  regiment: 0,
+  disease: '',
+  city: '',
+  other_diseases: [],
+} as unknown as Patient);
+const formStatusWithHeader = ref(true);
+const formStatusCurrent = ref(0);
+const formStatusOptions = ['info', 'success', 'danger', 'warning'];
 </script>
 
 <template>

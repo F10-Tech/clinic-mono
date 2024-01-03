@@ -15,64 +15,16 @@ import BaseButtons from '@/vendor/Base/BaseButtons.vue';
 import CardBoxModal from '@/vendor/CardBox/CardBoxModal.vue';
 import SectionTitleLineWithButton from '@/vendor/Section/SectionTitleLineWithButton.vue';
 import NotificationBar from '@/vendor/NotificationBar/NotificationBar.vue';
-import { format } from 'date-fns';
-
-
-
-function formatDate(value) {
-  if (value) {
-    return format(new Date(value), 'yyyy-MM-dd');
-  }
-}
-
-onBeforeMount(async () => {
-  isLoading.value = true; // Set loading to true while fetching data
-  // cityStore.filterQuery = patient.value.city.state;
-  isLoading.value = false; // Set loading to false after the data has loaded
-});
 
 const store = useRegimentStore();
 const agent = useAgentStore();
 const daysStore = useDaysStore();
-const days = ref(
-  daysStore.list.map((day) => {
-    return {
-      value: day.id,
-      label: day.name,
-    };
-  }),
-);
 
-onUnmounted(() => {
-  store.filterQuery = '';
-  // cityStore.selectedId = undefined;
-  // cityStore.unsetFilter();
-});
-
-
-const route = useRoute();
-const router = useRouter();
-
-const modalActive = ref(false);
-const isLoading = ref(true);
-
-
-const periods = [
-  { value: 'MORNING', label: 'صباحية' },
-  { value: 'EVENING', label: 'مسائية' },
-] 
-
-store.editedId = route.params.id.toString();
-const regiment = ref<Regiment>({
-  name: store.edited?.name,
-  id: store.edited?.id,
-  days: store.edited?.days,
-  period: store.edited?.period,
-} as unknown as Regiment);
-isLoading.value = false;
-onUnmounted(() => {
-  store.editedId = undefined;
-});
+const formStatusSubmit = () => {
+  formStatusCurrent.value = formStatusOptions[formStatusCurrent.value + 1]
+    ? formStatusCurrent.value + 1
+    : 0;
+};
 const deleteRegiment = async () => {
   const isDeleted = await store.delete(store.editedId!);
   if (isDeleted) {
@@ -110,27 +62,41 @@ const submit = async () => {
 const BackHim = () => {
   formStatusCurrent.value = 0;
 };
+onUnmounted(() => {
+  store.filterQuery = '';
+  store.editedId = undefined;
+  // cityStore.unsetFilter();
+});
 
+const days = ref(
+  daysStore.list.map((day) => {
+    return {
+      value: day.id,
+      label: day.name,
+    };
+  }),
+);
+
+const route = useRoute();
+const router = useRouter();
+
+const modalActive = ref(false);
+const isLoading = ref(true);
+const periods = [
+  { value: 'MORNING', label: 'صباحية' },
+  { value: 'EVENING', label: 'مسائية' },
+] 
+store.editedId = route.params.id.toString();
+const regiment = ref<Regiment>({
+  name: store.edited?.name,
+  id: store.edited?.id,
+  days: store.edited?.days,
+  period: store.edited?.period,
+} as unknown as Regiment);
+isLoading.value = false;
 const formStatusWithHeader = ref(true);
-
 const formStatusCurrent = ref(0);
-
 const formStatusOptions = ['info', 'success', 'danger', 'warning'];
-
-const formStatusSubmit = () => {
-  formStatusCurrent.value = formStatusOptions[formStatusCurrent.value + 1]
-    ? formStatusCurrent.value + 1
-    : 0;
-};
-
-const formatt = (date) => {
-  const day = date.getDate();
-  const month = date.getMonth() + 1;
-  const year = date.getFullYear();
-
-  return `${day}/${month}/${year}`;
-}
-
 </script>
 
 <template >

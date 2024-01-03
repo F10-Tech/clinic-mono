@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { mdiAccountMultiplePlus , mdiMagnify,mdiAccount  } from '@mdi/js';
 import { onBeforeMount, ref, onUnmounted } from 'vue';
-
 import { usePatientsStore, useDiseasesStore, useRegimentStore, useStateStore, useCityStore } from '@/stores/models';
 import SectionMain from '@/vendor/Section/SectionMain.vue';
 import TablePatients from '@/components/Tables/TablePatients.vue';
@@ -23,11 +22,15 @@ const isLoading = ref(false);
 const reset = () => {
   store.filterQuery = '';
 };
-
 const search = () => {
   store.localSearch('name');
 };
-
+const stopSearching = () => {
+  searching.value = false;
+  store.filterQuery = '';
+  store.selectedId = undefined;
+  store.unsetFilter();
+};
 onBeforeMount(async () => {
   isLoading.value = true; // Set loading to true while fetching data
   await store.fetchAll();
@@ -37,18 +40,11 @@ onBeforeMount(async () => {
   await cityStore.fetchAll();
   isLoading.value = false; // Set loading to false after the data has loaded
 });
-
 onUnmounted(() => {
   store.filterQuery = '';
   store.selectedId = undefined;
   store.unsetFilter();
 });
-const stopSearching = () => {
-  searching.value = false;
-  store.filterQuery = '';
-  store.selectedId = undefined;
-  store.unsetFilter();
-};
 </script>
 
 <template>
