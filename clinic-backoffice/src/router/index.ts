@@ -30,6 +30,32 @@ const routes = [
   },
   {
     meta: {
+      title: 'Orders',
+      requiresAuth: true,
+    },
+    path: '/orders',
+    name: 'orders',
+    component: () => import('@/pages/orders/ordersPage.vue'),
+    children: [
+      {
+        path: '',
+        name: 'orders.index',
+        component: () => import('@/pages/orders/ordersList.vue'),
+      },
+      {
+        path: 'new',
+        name: 'orders.new',
+        component: () => import('@/pages/orders/ordersNew.vue'),
+      },
+      {
+        path: 'edit/:id',
+        name: 'orders.edit',
+        component: () => import('@/pages/orders/ordersEdit.vue'),
+      },
+    ],
+  },
+  {
+    meta: {
       title: 'Diseases',
       requiresAuth: true,
     },

@@ -2,7 +2,7 @@ import type { Patient } from './patient';
 
 export class Order {
     id!: string;
-    patient!: string;
+    patient!: Patient;
     created_at!: Date;
     updated_at!: Date;
     amount!: number;

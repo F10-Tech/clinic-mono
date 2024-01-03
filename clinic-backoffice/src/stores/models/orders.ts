@@ -20,16 +20,34 @@ export const useOrdersStore = defineStore('orders', {
   }),
 
   actions: {
-    async fetchAll(): Promise<Boolean> {
+    async fetchAll(query: String): Promise<Boolean> {
       try {
-        const { data } = await api.all();
-        const { all, order } = convertToDict(data);
-        this.all = all;
-        this.order = order;
+          const axios = await api.raw();
+          // const { data } = await axios.get(apiUrl + '/order/one/' + id);
+          const { data } = await axios.get(apiUrl + '/order/' + query );
+          const { all, order } = convertToDict(data);
+          this.all = all;
+          this.order = order;
+        
+        
       } catch (error: any) {
         return false;
       }
       return true;
+    },
+    async fetchTotal(query: string): Promise<number> {
+      try {
+        const axiosInstance = await api.raw();
+        const response = await axiosInstance.get(apiUrl + '/order/total/' + query);
+        
+        if (typeof response.data === 'number') {
+          return response.data;
+        } else {
+          throw new Error('Data received is not a number');
+        }
+      } catch (error) {
+        throw error;
+      }
     },
     async fetchOne(id: string): Promise<Boolean> {
       try {
