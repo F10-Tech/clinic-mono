@@ -9,6 +9,7 @@ export class Patient {
     created_at!: Date;
     updated_at!: Date;
     medical_operation_date!: string;
+    price!: string;
     doctor!: string;
     number_of_days!: number;
     regiment!: Regiment;
