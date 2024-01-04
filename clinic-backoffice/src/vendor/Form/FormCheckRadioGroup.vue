@@ -40,6 +40,7 @@ const computedValue = computed({
 <template>
   <div class="flex justify-start flex-wrap -mb-3" :class="{ 'flex-col': isColumn }">
     <FormCheckRadio
+     dir="ltr"
       v-for="option in options"
       :key="option.value"
       v-model="computedValue"

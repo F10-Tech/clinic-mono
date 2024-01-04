@@ -45,12 +45,12 @@ export const useRegimentStore = defineStore('regiment', {
     async create(one: Partial<Regiment>): Promise<Boolean> {
       try {
         const axios = await api.raw();
-        const { data } = await axios.post(apiUrl + '/order/', one, {
+        const { data } = await axios.post(apiUrl + '/patient/regiment/create', one, {
           headers: {
-            'Content-Type': 'multipart/form-data',
             Authorization: `JWT ${agentStore.accessToken}`,
           },
         });
+        return true;
       } catch (error: any) {
         return false;
       }

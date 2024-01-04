@@ -15,6 +15,11 @@ import CardBoxComponentEmpty from '@/vendor/CardBox/CardBoxComponentEmpty.vue';
 const store = usePresenceStore();
 const styleStore = useStyleStore();
 
+const currentDate = new Date();
+const searching = ref(false);
+const isLoading = ref(false);
+const query = ref(formatDate(new Date()));
+
 
 function formatDate(value) {
   if (value) {
@@ -26,8 +31,23 @@ const reset = () => {
 };
 onBeforeMount(async () => {
   isLoading.value = true;
-  console.log('store');
-  await store.fetchAll('today');
+  const urlParams = new URLSearchParams(window.location.search);
+  const dateParam = urlParams.get('date');
+
+  const dateString = formatDate(currentDate)?.toString();
+  if (dateString !== undefined) {
+       try { 
+        if (dateParam  != undefined) {
+          await store.fetchAll(dateParam);
+          await store.fetchAll(dateParam);
+        } else {
+          await store.fetchAll('today');
+          await store.fetchAll(dateString);
+        }
+      } catch (error) {
+        console.error('Error fetching total of the month:', error);
+      }
+    }
   isLoading.value = false;
 });
 onUnmounted(() => {
@@ -49,21 +69,8 @@ const formatt = (date) => {
   return `${day}/${month}/${year}`;
 }
 const search = (async () =>{
-  const date = ref<string>(); 
-  const formattedDate = formatDate(query.value);
-  if (formattedDate !== undefined) {
-    date.value = formattedDate.toString();
-    await store.fetchAll(date.value);
-
-  } else {
-    console.error('Formatted date is undefined');
-    // Handle the case when formattedDate is undefined
-  }
+  window.location.href = `/records/presences?date=${formatDate(query.value)}`;
 });
-
-const searching = ref(false);
-const isLoading = ref(false);
-const query = ref(formatDate(new Date()));
 </script>
 
 <template>

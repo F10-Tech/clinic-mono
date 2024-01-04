@@ -42,16 +42,6 @@ const routes = [
         name: 'orders.index',
         component: () => import('@/pages/orders/ordersList.vue'),
       },
-      {
-        path: 'new',
-        name: 'orders.new',
-        component: () => import('@/pages/orders/ordersNew.vue'),
-      },
-      {
-        path: 'edit/:id',
-        name: 'orders.edit',
-        component: () => import('@/pages/orders/ordersEdit.vue'),
-      },
     ],
   },
   {
@@ -111,9 +101,9 @@ const routes = [
         component: () => import('@/pages/regiments/regimentsList.vue'),
       },
       {
-        path: 'regiments',
+        path: 'new',
         name: 'regiments.new',
-        component: () => import('@/pages/regiments/regimentsList.vue'),
+        component: () => import('@/pages/regiments/regimentsNew.vue'),
       },
       {
         path: 'edit/:id',

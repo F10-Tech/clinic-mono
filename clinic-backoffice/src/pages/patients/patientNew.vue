@@ -83,7 +83,14 @@ const submit = async () => {
   // console.log(patient.value);
   const dateString = formatDate(patient.value.medical_operation_date)?.toString();
   if (dateString !== undefined) {
-      patient.value.medical_operation_date = dateString;
+    let medicalOperationDate: string | null;
+
+      if (patient.value.surgery) {
+        medicalOperationDate = null;
+      } else {
+        medicalOperationDate = dateString;
+      }
+      patient.value.medical_operation_date = medicalOperationDate as string;
   }
   console.log(patient.value);
   const isCreated = await store.create(patient.value, img_1.value, img_2.value);
@@ -134,6 +141,7 @@ const patient = ref<Patient>({
   city: '',
   other_diseases: [],
   price: '',
+  surgery: false,
 } as unknown as Patient);
 </script>
 
@@ -176,19 +184,29 @@ const patient = ref<Patient>({
             />
         </FormField>  
       </div>
-      <div class="flex">
-          <FormField dir="rtl" label="تاريخ إجراء العملية" class=" ml-3 w-1/2">
-            <VueDatePicker placeholder="تاريخ إجراء العملية" v-model="patient.medical_operation_date"  :format="formatt" :dark="styleStore.darkMode" />
+      <div class="flex w-full">
+          <FormField  label="أجرى عملية" class="ml-3 w-[6%]">
+            <FormCheckRadioGroup
+              class="my-5 mx-4"
+              v-model="patient.surgery"
+              type="switch"
+              name="notifications-switch"
+              :options="{ outline: 'Active' }"
+            />
           </FormField>
-          <FormField dir="rtl" label="الطبيب" class=" w-1/2">
+          <FormField  label="تاريخ إجراء العملية" class=" ml-3 w-[47%]">
+            <VueDatePicker :disabled="patient.surgery" v-model="patient.medical_operation_date" :format="formatt" :dark="styleStore.darkMode" />
+          </FormField>
+          <FormField  label="الطبيب" class=" w-[47%]">
             <FormControl
               v-model="patient.doctor"
               type="text"
-              placeholder="الطبيب"
+              placeholder="المرض الأساسي "
               :style="{ direction: 'rtl' }"
             />
           </FormField>
-      </div>
+          
+        </div>
       <div class="flex mb-4">
           <FormField dir="rtl" label="الفوج" class="ml-3 w-1/3">
            <FormControl

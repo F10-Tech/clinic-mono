@@ -109,7 +109,7 @@ const deletePresences = async () => {
             {{ formatDate(order.created_at) }}
           </td>
           <td data-label="الأسم" class="text-center">
-            {{ order.amount }}
+            {{ order.amount }} دج
           </td>
         </tr>
       </tbody>

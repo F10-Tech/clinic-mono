@@ -37,10 +37,10 @@ const reset = () => {
 
 
 onBeforeMount(async () => {
+  isLoading.value = true;
   const urlParams = new URLSearchParams(window.location.search);
   const dateParam = urlParams.get('date');
 
-  isLoading.value = true;
   const dateString = formatDate(currentDate)?.toString();
   if (dateString !== undefined) {
        try { 
@@ -80,12 +80,6 @@ const formatt = (date) => {
 
   return `${day}/${month}/${year}`;
 }
-// const search = (async () =>{
-//   const date = ref<string>(); 
-//   const formattedDate  = formatDate(query.value);
-//   date.value = formattedDate.toString();
-//   await store.fetchAll(date.value);
-// });
 const search = async () => {
   window.location.href = `/orders?date=${formatDate(query.value)}`;
 };

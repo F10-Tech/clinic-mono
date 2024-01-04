@@ -3,7 +3,7 @@ import {mdiContentSaveAll, mdiDelete, mdiClipboardList, mdiMedicalBag, mdiBookEd
 import { LoopingRhombusesSpinner } from 'epic-spinners';
 import { ref, onUnmounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { usePatientsStore, useCityStore ,useStateStore,  useAgentStore, useStyleStore, useDiseasesStore, useRegimentStore } from '@/stores';
+import { usePatientsStore, usePriceStore, useCityStore ,useStateStore,  useAgentStore, useStyleStore, useDiseasesStore, useRegimentStore } from '@/stores';
 import type { Patient } from '@/models/patient';
 import SectionMain from '@/vendor/Section/SectionMain.vue';
 import PillTag from '@/vendor/PillTag/PillTag.vue';
@@ -28,6 +28,7 @@ const diseaseStore = useDiseasesStore();
 const regimentStore = useRegimentStore();
 const statesStore = useStateStore();
 const cityStore = useCityStore();
+const priceStore = usePriceStore();
 
 const formatt = (date) => {
   const day = date.getDate();
@@ -56,7 +57,7 @@ const diseases = ref(
     };
   }),
 );
-const regiment = ref(
+const regiments = ref(
   regimentStore.list.map((regiment) => {
     return {
       value: regiment.id,
@@ -71,6 +72,14 @@ const cities = ref(
         label: city.name,
       };
   })
+);
+const prices = ref(
+  priceStore.list.map((price) => {
+    return {
+      value: price.id,
+      label: price.name,
+    };
+  }),
 );
 const search = () => {
   cityStore.localSearch('state');
@@ -99,7 +108,14 @@ const deletePatient = async () => {
 const submit = async () => {
   const dateString = formatDate(patient.value.medical_operation_date)?.toString();
   if (dateString !== undefined) {
-      patient.value.medical_operation_date = dateString;
+    let medicalOperationDate: string | null;
+
+      if (patient.value.surgery) {
+        medicalOperationDate = null;
+      } else {
+        medicalOperationDate = dateString;
+      }
+      patient.value.medical_operation_date = medicalOperationDate as string;
   }
   const isUpdated = await store.patch(
     store.editedId!,
@@ -162,6 +178,8 @@ const patient = ref<Patient>({
   regiment: store.edited?.regiment?.id,
   city: store.edited?.city?.id,
   rest: store.edited?.rest,
+  price : store.edited?.price,
+  surgery: store.edited?.surgery,
 } as unknown as Patient);
 
 const formStatusWithHeader = ref(true);
@@ -236,11 +254,20 @@ isLoading.value = false;
             />
           </FormField>
         </div>
-        <div class="flex">
-          <FormField  label="تاريخ إجراء العملية" class=" ml-3 w-1/2">
-            <VueDatePicker v-model="patient.medical_operation_date" :format="formatt" :dark="styleStore.darkMode" />
+        <div class="flex w-full">
+          <FormField  label="أجرى عملية" class="ml-3 w-[6%]">
+            <FormCheckRadioGroup
+              class="my-5 mx-4"
+              v-model="patient.surgery"
+              type="switch"
+              name="notifications-switch"
+              :options="{ outline: 'Active' }"
+            />
           </FormField>
-          <FormField  label="الطبيب" class=" w-1/2">
+          <FormField  label="تاريخ إجراء العملية" class=" ml-3 w-[47%]">
+            <VueDatePicker :disabled="patient.surgery" v-model="patient.medical_operation_date" :format="formatt" :dark="styleStore.darkMode" />
+          </FormField>
+          <FormField  label="الطبيب" class=" w-[47%]">
             <FormControl
               v-model="patient.doctor"
               type="text"
@@ -251,19 +278,28 @@ isLoading.value = false;
           
         </div>
         <div class="flex mb-4">
-          <FormField  label="الفوج" class="ml-3 w-1/2">
-            <FormControl
+          <FormField dir="rtl" label="الفوج" class="ml-3 w-1/3">
+           <FormControl
+              :options="regiments"
               v-model="patient.regiment"
-              :options="regiment"
-              type="text"
-              placeholder="مرض"
+              type="number"
+              placeholder="الفوج"
+              :style="{ direction: 'rtl' }"
+            />
+          </FormField> 
+          <FormField dir="rtl" label="الفئة" class="ml-3 w-1/3">
+           <FormControl
+              :options="prices"
+              v-model="patient.price"
+              type="number"
+              placeholder="الفوج"
+              :style="{ direction: 'rtl' }"
             />
           </FormField>
-
-          <FormField dir="rtl" label="مرض" class=" w-1/2">
+          <FormField dir="rtl" label="مرض" class="w-1/3">
             <FormControl
-              v-model="patient.disease"
               :options="diseases"
+              v-model="patient.disease"
               type="text"
               placeholder="مرض"
             />

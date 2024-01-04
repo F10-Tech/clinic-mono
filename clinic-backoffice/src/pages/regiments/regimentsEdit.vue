@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { LoopingRhombusesSpinner } from 'epic-spinners';
+import {mdiCalendarToday} from '@mdi/js';
 import { ref, onUnmounted, onBeforeMount } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useRegimentStore, useAgentStore, useDaysStore } from '@/stores';
@@ -137,8 +138,8 @@ const formStatusOptions = ['info', 'success', 'danger', 'warning'];
             />
           </FormField>
         </div>
-        <div  class="w-full h-full p-4 bg-slate-900 mb-4 rounded">
-          <div class=" text-2xl mb-4 font-bold "> الأيام :</div>
+        <div dir="rtl" class="w-full h-full p-4 dark:bg-slate-900 bg-slate-100 mb-4 rounded">
+          <SectionTitleLineWithButton dir="rtl" :icon="mdiCalendarToday" title="الأيام"  />
           <FormCheckRadioGroup
             v-model="regiment.days"
             name="sample-checkbox"

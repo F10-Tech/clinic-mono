@@ -26,6 +26,7 @@ export class Patient {
     checkout!: boolean;
     rest!: number;
     sessions!: number;
+    surgery!: boolean;
   
     constructor(data: Partial<Patient>) {
       Object.assign(this, data);
