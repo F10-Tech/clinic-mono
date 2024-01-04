@@ -64,7 +64,6 @@ class PatientSerializer(serializers.ModelSerializer):
         model = Patient
         fields = '__all__'
 
-
 class ListPatientByRegimentSerializer(serializers.ModelSerializer):
 
     status = serializers.SerializerMethodField('get_state_data')
@@ -155,13 +154,13 @@ class CreatePatientSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Patient
-        fields = ['id', 'name', 'age', 'phone','price', 'medical_operation_date', 'doctor', 'number_of_days', 'regiment', 'disease', 'other_diseases', 'city', 'rest']
+        fields = ['id', 'name', 'age', 'phone','price', 'medical_operation_date', 'doctor', 'number_of_days', 'regiment', 'disease', 'other_diseases', 'city', 'rest', 'surgery']
 
 class UpdatePatientSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Patient
-        fields = ['name', 'age', 'phone', 'medical_operation_date', 'doctor', 'number_of_days', 'regiment', 'disease', 'other_diseases', 'city']
+        fields = ['name', 'age', 'phone', 'medical_operation_date', 'doctor', 'number_of_days', 'regiment', 'disease', 'other_diseases', 'city', 'rest', 'surgery', 'price']
 
 class UpdateImgsSerializer(serializers.ModelSerializer):
     
@@ -197,7 +196,6 @@ class CreatePresenceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Presence
         fields = ['patient']
-
 
 class DiseaseSerializer(serializers.ModelSerializer):
 
