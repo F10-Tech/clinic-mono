@@ -231,3 +231,10 @@ def ListOfDays(request):
     days = Day.objects.all()
     serializer = DaySerializer(days, many=True)
     return Response(serializer.data)
+
+@api_view(['GET'])
+# @permission_classes([IsAuthenticated])
+def ListOfPrice(request):
+    price = Price.objects.all()
+    serializer = PriceSerializer(price, many=True)
+    return Response(serializer.data)    
