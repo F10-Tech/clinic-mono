@@ -237,4 +237,21 @@ def ListOfDays(request):
 def ListOfPrice(request):
     price = Price.objects.all()
     serializer = PriceSerializer(price, many=True)
-    return Response(serializer.data)    
+    return Response(serializer.data) 
+
+@api_view(['POST'])
+# @permission_classes([IsAuthenticated])
+def CreatePrice(request):
+    serializer = PriceSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(status.HTTP_400_BAD_REQUEST) 
+
+@api_view(['DELETE'])
+# @permission_classes([IsAuthenticated])
+def DeletePrice(request, pk):
+    price = Price.objects.get(id=pk)
+    serializer = PriceSerializer(price, many=False)
+    price.delete()
+    return Response(serializer.data)

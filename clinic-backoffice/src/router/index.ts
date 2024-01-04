@@ -46,6 +46,27 @@ const routes = [
   },
   {
     meta: {
+      title: 'Prices',
+      requiresAuth: true,
+    },
+    path: '/prices',
+    name: 'prices',
+    component: () => import('@/pages/prices/pricesPage.vue'),
+    children: [
+      {
+        path: '',
+        name: 'prices.index',
+        component: () => import('@/pages/prices/pricesList.vue'),
+      },
+      {
+        path: 'new',
+        name: 'prices.new',
+        component: () => import('@/pages/prices/pricesNew.vue'),
+      },
+    ],
+  },
+  {
+    meta: {
       title: 'Diseases',
       requiresAuth: true,
     },

@@ -3,6 +3,7 @@ import type { Patient } from './patient';
 export class Price {
     id!: string;
     name!: Patient;
+    price!: number;
     created_at!: Date;
     updated_at!: Date;
   

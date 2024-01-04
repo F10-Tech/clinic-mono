@@ -112,7 +112,7 @@ export const usePriceStore = defineStore('prices', {
         return false;
       }
     },
-    async deletePatient(id: string): Promise<boolean> {
+    async delete(id: string): Promise<boolean> {
       try {
         await api.delete(id);
         return true;
