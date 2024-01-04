@@ -9,6 +9,7 @@ import SectionTitleLineWithButton from '@/vendor/Section/SectionTitleLineWithBut
 import BaseButtons from '@/vendor/Base/BaseButtons.vue';
 import BaseButton from '@/vendor/Base/BaseButton.vue';
 import FormControl from '@/vendor/Form/FormControl.vue';
+import CardBoxComponentEmpty from '@/vendor/CardBox/CardBoxComponentEmpty.vue';
 
 const store = useRecordStore();
 
@@ -74,8 +75,11 @@ onUnmounted(() => {
       @clear="reset"
     />
 
-    <CardBox class="mb-6" has-table>
+    <CardBox v-if="store.filteredList && store.filteredList.length > 0"  class="mb-6" has-table>
       <TableRecordPresences :patients="store.filteredList" :loading="isLoading" />
+    </CardBox>
+    <CardBox v-else >
+      <CardBoxComponentEmpty /> 
     </CardBox>
   </SectionMain>
 </template>

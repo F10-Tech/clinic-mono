@@ -2,7 +2,7 @@
 import {mdiContentSaveAll, mdiAccountMultiplePlus, mdiMedicalBag} from '@mdi/js';
 import { ref, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { useAgentStore, useStyleStore, useDiseasesStore, useRegimentStore, useCityStore, usePatientsStore, useStateStore } from '@/stores';
+import { useAgentStore, usePriceStore, useStyleStore, useDiseasesStore, useRegimentStore, useCityStore, usePatientsStore, useStateStore } from '@/stores';
 import type { Patient } from '@/models/patient';
 import SectionMain from '@/vendor/Section/SectionMain.vue';
 import CardBox from '@/vendor/CardBox/CardBox.vue';
@@ -26,6 +26,7 @@ const regimentStore = useRegimentStore();
 const styleStore = useStyleStore();
 const cityStore = useCityStore();
 const statesStore = useStateStore();
+const priceStore = usePriceStore();
 
 function formatDate(value) {
   if (value) {
@@ -56,6 +57,14 @@ const states = ref(
     };
   }),
 );
+const prices = ref(
+  priceStore.list.map((price) => {
+    return {
+      value: price.id,
+      label: price.name,
+    };
+  }),
+);
 onUnmounted(() => {
   cityStore.filterQuery = '';
   cityStore.selectedId = undefined;
@@ -71,6 +80,7 @@ const search = () => {
   })
 };
 const submit = async () => {
+  // console.log(patient.value);
   const dateString = formatDate(patient.value.medical_operation_date)?.toString();
   if (dateString !== undefined) {
       patient.value.medical_operation_date = dateString;
@@ -115,14 +125,15 @@ const formStatusOptions = ['info', 'success', 'danger', 'warning'];
 const patient = ref<Patient>({
   name: '',
   phone: '',
-  age: 0,
-  number_of_days: 0,
+  age: '',
+  number_of_days: '',
   medical_operation_date: '',
   doctor: '',
-  regiment: 0,
+  regiment: '',
   disease: '',
   city: '',
   other_diseases: [],
+  price: '',
 } as unknown as Patient);
 </script>
 
@@ -134,7 +145,7 @@ const patient = ref<Patient>({
         <FormField  label="رقم الهاتف" class="ml-3 w-1/2">
           <FormControl
             v-model="patient.phone"
-            type="text"
+            type="number"
             placeholder="رقم الهاتف"
             :required="true"
           />
@@ -149,37 +160,37 @@ const patient = ref<Patient>({
         </FormField>
       </div>
       <div class="flex">
-        <FormField label="عدد الحصص" class="ml-3 w-1/2">
-          <FormControl
-              v-model="patient.number_of_days"
-              type="number"
-              placeholder="عدد الحصص"
-              :style="{ direction: 'rtl' }"
-            />
-        </FormField>
-        <FormField dir="rtl" label="العمر" class=" w-1/2">
+        <FormField dir="rtl" label="العمر" class="ml-3 w-1/2">
             <FormControl
               v-model="patient.age"
               type="number"
               placeholder="العمر "
             />
           </FormField>
+        <FormField label="عدد الحصص" class=" w-1/2">
+          <FormControl
+              v-model="patient.number_of_days"
+              type="number"
+              placeholder="عدد الحصص"
+              :style="{ direction: 'rtl' }"
+            />
+        </FormField>  
       </div>
       <div class="flex">
-        <FormField dir="rtl" label="تاريخ إجراء العملية" class=" ml-3 w-1/2">
-            <VueDatePicker v-model="patient.medical_operation_date"  :format="formatt" :dark="styleStore.darkMode" />
+          <FormField dir="rtl" label="تاريخ إجراء العملية" class=" ml-3 w-1/2">
+            <VueDatePicker placeholder="تاريخ إجراء العملية" v-model="patient.medical_operation_date"  :format="formatt" :dark="styleStore.darkMode" />
           </FormField>
           <FormField dir="rtl" label="الطبيب" class=" w-1/2">
             <FormControl
               v-model="patient.doctor"
               type="text"
-              placeholder="المرض الأساسي "
+              placeholder="الطبيب"
               :style="{ direction: 'rtl' }"
             />
           </FormField>
       </div>
       <div class="flex mb-4">
-          <FormField dir="rtl" label="الفوج" class="ml-3 w-1/2">
+          <FormField dir="rtl" label="الفوج" class="ml-3 w-1/3">
            <FormControl
               :options="regiments"
               v-model="patient.regiment"
@@ -188,8 +199,16 @@ const patient = ref<Patient>({
               :style="{ direction: 'rtl' }"
             />
           </FormField> 
-
-          <FormField dir="rtl" label="مرض" class="w-1/2">
+          <FormField dir="rtl" label="الفئة" class="ml-3 w-1/3">
+           <FormControl
+              :options="prices"
+              v-model="patient.price"
+              type="number"
+              placeholder="الفوج"
+              :style="{ direction: 'rtl' }"
+            />
+          </FormField>
+          <FormField dir="rtl" label="مرض" class="w-1/3">
             <FormControl
               :options="diseases"
               v-model="patient.disease"
@@ -235,7 +254,6 @@ const patient = ref<Patient>({
             text="رفع صورة رقم 2"
           />
         </div>
-
       <BaseDivider />
 
       <BaseButtons class="justify-end">

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { mdiClipboardList, mdiMagnify, mdiReceiptTextPlus } from '@mdi/js';
 import { onBeforeMount, ref, onUnmounted } from 'vue';
-import { useAgentStore, usePresenceStore, useStyleStore } from '@/stores';
+import { usePresenceStore, useStyleStore } from '@/stores';
 import SectionMain from '@/vendor/Section/SectionMain.vue';
 import TablePresences from '@/components/Tables/TablePresences.vue';
 import CardBox from '@/vendor/CardBox/CardBox.vue';
@@ -10,6 +10,7 @@ import BaseButtons from '@/vendor/Base/BaseButtons.vue';
 import BaseButton from '@/vendor/Base/BaseButton.vue';
 import { format } from 'date-fns';
 import VueDatePicker from '@vuepic/vue-datepicker';
+import CardBoxComponentEmpty from '@/vendor/CardBox/CardBoxComponentEmpty.vue';
 
 const store = usePresenceStore();
 const styleStore = useStyleStore();
@@ -98,8 +99,12 @@ const query = ref(formatDate(new Date()));
                 />
             </BaseButtons>
     </div>
-    <CardBox class="mb-6" has-table>
+    
+    <CardBox v-if="store.filteredList && store.filteredList.length > 0"  class="mb-6" has-table>
       <TablePresences :presences="store.filteredList" :loading="isLoading" />
+    </CardBox>
+    <CardBox v-else >
+      <CardBoxComponentEmpty /> 
     </CardBox>
   </SectionMain>
 </template>

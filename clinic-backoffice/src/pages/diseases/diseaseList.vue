@@ -5,6 +5,7 @@ import { useDiseasesStore } from '@/stores/models';
 import SectionMain from '@/vendor/Section/SectionMain.vue';
 import TableDiseases from '@/components/Tables/TableDiseases.vue';
 import CardBox from '@/vendor/CardBox/CardBox.vue';
+import CardBoxComponentEmpty from '@/vendor/CardBox/CardBoxComponentEmpty.vue';
 import SectionTitleLineWithButton from '@/vendor/Section/SectionTitleLineWithButton.vue';
 import BaseButtons from '@/vendor/Base/BaseButtons.vue';
 import BaseButton from '@/vendor/Base/BaseButton.vue';
@@ -76,9 +77,11 @@ const stopSearching = () => {
         @input="search"
         @clear="reset"
       />
-
-      <CardBox class="mb-6" has-table>
+      <CardBox v-if="store.filteredList && store.filteredList.length > 0"  class="mb-6" has-table>
         <TableDiseases :diseases="store.filteredList" :loading="isLoading"  />
+      </CardBox>
+      <CardBox v-else >
+        <CardBoxComponentEmpty /> 
       </CardBox>
   </SectionMain>
 </template>

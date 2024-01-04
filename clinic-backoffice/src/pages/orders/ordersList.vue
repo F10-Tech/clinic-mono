@@ -6,6 +6,7 @@ import SectionMain from '@/vendor/Section/SectionMain.vue';
 import SectionTitleLineWithButton from '@/vendor/Section/SectionTitleLineWithButton.vue';
 import TableOrders from '@/components/Tables/TableOrders.vue';
 import CardBox from '@/vendor/CardBox/CardBox.vue';
+import CardBoxComponentEmpty from '@/vendor/CardBox/CardBoxComponentEmpty.vue';
 import BaseButtons from '@/vendor/Base/BaseButtons.vue';
 import BaseButton from '@/vendor/Base/BaseButton.vue';
 import CardBoxWidget from '@/vendor/CardBox/CardBoxWidget.vue';
@@ -36,12 +37,20 @@ const reset = () => {
 
 
 onBeforeMount(async () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const dateParam = urlParams.get('date');
+
   isLoading.value = true;
   const dateString = formatDate(currentDate)?.toString();
   if (dateString !== undefined) {
-      await store.fetchAll(dateString);
-      try {
-      totalofDay.value = await store.fetchTotal(dateString);
+       try { 
+        if (dateParam  != undefined) {
+          await store.fetchAll(dateParam);
+          totalofDay.value = await store.fetchTotal(dateParam);
+        } else {
+          totalofDay.value = await store.fetchTotal(dateString);
+          await store.fetchAll(dateString);
+        }
       totalofMonth.value = await store.fetchTotal('month');
       totalofYear.value = await store.fetchTotal('year');
       } catch (error) {
@@ -78,19 +87,7 @@ const formatt = (date) => {
 //   await store.fetchAll(date.value);
 // });
 const search = async () => {
-  try {
-    const date = ref<string>();
-    const formattedDate = formatDate(query.value);
-
-    if (formattedDate) {
-      date.value = formattedDate.toString();
-      await store.fetchAll(date.value);
-    } else {
-      console.error('Formatted date is undefined');
-    }
-  } catch (error) {
-    console.error('Error in search:', error);
-  }
+  window.location.href = `/orders?date=${formatDate(query.value)}`;
 };
 </script>
 
@@ -114,7 +111,6 @@ const search = async () => {
                 <BaseButton v-if="searching"
                   label="بحث"
                   color="contrast"
-                  to="/records/presences"
                   class="font-medium mr-2"
                   @click="search"
                 />
@@ -127,7 +123,7 @@ const search = async () => {
           color="text-emerald-500"
           :icon="mdiCurrencyUsd"
           :number="totalofDay"
-          label="يومي"
+          label="اليوم"
         />
         <CardBoxWidget
           class="w-1/3 ml-2"
@@ -147,9 +143,11 @@ const search = async () => {
         />
     </div>
 
-    
-    <CardBox class="mb-6" has-table>
+    <CardBox v-if="store.filteredList && store.filteredList.length > 0"  class="mb-6" has-table>
       <TableOrders :orders="store.filteredList" :loading="isLoading" />
+    </CardBox>
+    <CardBox v-else >
+      <CardBoxComponentEmpty /> 
     </CardBox>
   </SectionMain>
 </template>

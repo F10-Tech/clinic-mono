@@ -16,7 +16,7 @@ const agent = useAgentStore();
 
 function formatDate(value) {
   if (value) {
-    return format(new Date(value), 'yyyy-MM-dd');
+    return format(new Date(value), `HH:mm | yyyy-MM-dd`);
   }
 }
 const props = defineProps({
@@ -96,8 +96,8 @@ const deletePresences = async () => {
       <thead>
         <tr>
           <th class="text-center">الأسم</th>
-          <th class="text-center">المبلغ</th>
           <th class="text-center">التاريخ</th>
+          <th class="text-center">المبلغ</th>
         </tr>
       </thead>
       <tbody>
