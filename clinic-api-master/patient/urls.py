@@ -42,5 +42,7 @@ urlpatterns = [
 
     # price/
     path('price/', views.ListOfPrice),
+    path('price/create/', views.CreatePrice),
+    path('price/<str:pk>/delete', views.DeletePrice),
 
 ]
