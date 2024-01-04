@@ -9,7 +9,7 @@ class Patient(models.Model):
     age = models.IntegerField()
     phone = models.CharField(max_length=15, blank=True, null=False, unique=True)
     
-    medical_operation_date = models.DateField()
+    medical_operation_date = models.DateField( blank=True, null=True)
     surgery = models.BooleanField(default=False)
     doctor = models.CharField(max_length=100)
 
@@ -131,4 +131,4 @@ class Price ( models.Model ) :
         ordering = ['-created_at']
 
     def __str__(self):
-        return self.name
+        return self.id

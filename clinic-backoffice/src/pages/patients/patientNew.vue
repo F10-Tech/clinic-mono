@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import {mdiContentSaveAll, mdiDelete, mdiAccountMultiplePlus, mdiMedicalBag} from '@mdi/js';
+import {mdiContentSaveAll, mdiAccountMultiplePlus, mdiMedicalBag} from '@mdi/js';
 import { ref, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { useAgentStore, useStyleStore, useDiseasesStore, useRegimentStore, useCityStore, usePatientsStore, useStateStore } from '@/stores';
+import { useAgentStore, usePriceStore, useStyleStore, useDiseasesStore, useRegimentStore, useCityStore, usePatientsStore, useStateStore } from '@/stores';
 import type { Patient } from '@/models/patient';
 import SectionMain from '@/vendor/Section/SectionMain.vue';
 import CardBox from '@/vendor/CardBox/CardBox.vue';
@@ -18,15 +18,6 @@ import { format } from 'date-fns';
 import VueDatePicker from '@vuepic/vue-datepicker';
 import FormCheckRadioGroup from '@/vendor/Form/FormCheckRadioGroup.vue';
 
-
-function formatDate(value) {
-  if (value) {
-    return format(new Date(value), 'yyyy-MM-dd');
-  }
-}
-
-
-
 const agentStore = useAgentStore();
 const router = useRouter();
 const store = usePatientsStore();
@@ -35,7 +26,13 @@ const regimentStore = useRegimentStore();
 const styleStore = useStyleStore();
 const cityStore = useCityStore();
 const statesStore = useStateStore();
+const priceStore = usePriceStore();
 
+function formatDate(value) {
+  if (value) {
+    return format(new Date(value), 'yyyy-MM-dd');
+  }
+}
 const diseases = ref(
   diseaseStore.list.map((disease) => {
     return {
@@ -44,7 +41,6 @@ const diseases = ref(
     };
   }),
 );
-
 const regiments = ref(
   regimentStore.list.map((regiment) => {
     return {
@@ -61,33 +57,19 @@ const states = ref(
     };
   }),
 );
-const cities = ref();
-
-const img_1 = ref(undefined);
-const img_2 = ref(undefined);
-
-const patient = ref<Patient>({
-  name: '',
-  phone: '',
-  age: 0,
-  number_of_days: 0,
-  medical_operation_date: '',
-  doctor: '',
-  regiment: 0,
-  disease: '',
-  city: '',
-  other_diseases: [],
-} as unknown as Patient);
-  
-
-
-
+const prices = ref(
+  priceStore.list.map((price) => {
+    return {
+      value: price.id,
+      label: price.name,
+    };
+  }),
+);
 onUnmounted(() => {
   cityStore.filterQuery = '';
   cityStore.selectedId = undefined;
   cityStore.unsetFilter();
 });
-
 const search = () => {
   cityStore.localSearch('state');
   cities.value = cityStore.filteredList.map((city) => {
@@ -97,9 +79,19 @@ const search = () => {
       };
   })
 };
-
 const submit = async () => {
-  patient.value.medical_operation_date = formatDate(patient.value.medical_operation_date);
+  // console.log(patient.value);
+  const dateString = formatDate(patient.value.medical_operation_date)?.toString();
+  if (dateString !== undefined) {
+    let medicalOperationDate: string | null;
+
+      if (patient.value.surgery) {
+        medicalOperationDate = null;
+      } else {
+        medicalOperationDate = dateString;
+      }
+      patient.value.medical_operation_date = medicalOperationDate as string;
+  }
   console.log(patient.value);
   const isCreated = await store.create(patient.value, img_1.value, img_2.value);
   if (isCreated) {
@@ -118,13 +110,6 @@ const submit = async () => {
 const BackHim = () => {
   formStatusCurrent.value = 0;
 };
-
-const formStatusWithHeader = ref(true);
-
-const formStatusCurrent = ref(0);
-
-const formStatusOptions = ['info', 'success', 'danger', 'warning'];
-
 const formStatusSubmit = () => {
   formStatusCurrent.value = formStatusOptions[formStatusCurrent.value + 1]
     ? formStatusCurrent.value + 1
@@ -137,6 +122,27 @@ const formatt = (date) => {
 
   return `${day}/${month}/${year}`;
 }
+
+const cities = ref();
+const img_1 = ref(undefined);
+const img_2 = ref(undefined);
+const formStatusWithHeader = ref(true);
+const formStatusCurrent = ref(0);
+const formStatusOptions = ['info', 'success', 'danger', 'warning'];
+const patient = ref<Patient>({
+  name: '',
+  phone: '',
+  age: '',
+  number_of_days: '',
+  medical_operation_date: '',
+  doctor: '',
+  regiment: '',
+  disease: '',
+  city: '',
+  other_diseases: [],
+  price: '',
+  surgery: false,
+} as unknown as Patient);
 </script>
 
 <template>
@@ -147,7 +153,7 @@ const formatt = (date) => {
         <FormField  label="رقم الهاتف" class="ml-3 w-1/2">
           <FormControl
             v-model="patient.phone"
-            type="text"
+            type="number"
             placeholder="رقم الهاتف"
             :required="true"
           />
@@ -162,27 +168,36 @@ const formatt = (date) => {
         </FormField>
       </div>
       <div class="flex">
-        <FormField label="عدد الحصص" class="ml-3 w-1/2">
-          <FormControl
-              v-model="patient.number_of_days"
-              type="number"
-              placeholder="عدد الحصص"
-              :style="{ direction: 'rtl' }"
-            />
-        </FormField>
-        <FormField dir="rtl" label="العمر" class=" w-1/2">
+        <FormField dir="rtl" label="العمر" class="ml-3 w-1/2">
             <FormControl
               v-model="patient.age"
               type="number"
               placeholder="العمر "
             />
           </FormField>
+        <FormField label="عدد الحصص" class=" w-1/2">
+          <FormControl
+              v-model="patient.number_of_days"
+              type="number"
+              placeholder="عدد الحصص"
+              :style="{ direction: 'rtl' }"
+            />
+        </FormField>  
       </div>
-      <div class="flex">
-        <FormField dir="rtl" label="تاريخ إجراء العملية" class=" ml-3 w-1/2">
-            <VueDatePicker v-model="patient.medical_operation_date"  :format="formatt" :dark="styleStore.darkMode" />
+      <div class="flex w-full">
+          <FormField  label="أجرى عملية" class="ml-3 w-[6%]">
+            <FormCheckRadioGroup
+              class="my-5 mx-4"
+              v-model="patient.surgery"
+              type="switch"
+              name="notifications-switch"
+              :options="{ outline: 'Active' }"
+            />
           </FormField>
-          <FormField dir="rtl" label="الطبيب" class=" w-1/2">
+          <FormField  label="تاريخ إجراء العملية" class=" ml-3 w-[47%]">
+            <VueDatePicker :disabled="patient.surgery" v-model="patient.medical_operation_date" :format="formatt" :dark="styleStore.darkMode" />
+          </FormField>
+          <FormField  label="الطبيب" class=" w-[47%]">
             <FormControl
               v-model="patient.doctor"
               type="text"
@@ -190,9 +205,10 @@ const formatt = (date) => {
               :style="{ direction: 'rtl' }"
             />
           </FormField>
-      </div>
+          
+        </div>
       <div class="flex mb-4">
-          <FormField dir="rtl" label="الفوج" class="ml-3 w-1/2">
+          <FormField dir="rtl" label="الفوج" class="ml-3 w-1/3">
            <FormControl
               :options="regiments"
               v-model="patient.regiment"
@@ -201,8 +217,16 @@ const formatt = (date) => {
               :style="{ direction: 'rtl' }"
             />
           </FormField> 
-
-          <FormField dir="rtl" label="مرض" class="w-1/2">
+          <FormField dir="rtl" label="الفئة" class="ml-3 w-1/3">
+           <FormControl
+              :options="prices"
+              v-model="patient.price"
+              type="number"
+              placeholder="الفوج"
+              :style="{ direction: 'rtl' }"
+            />
+          </FormField>
+          <FormField dir="rtl" label="مرض" class="w-1/3">
             <FormControl
               :options="diseases"
               v-model="patient.disease"
@@ -248,7 +272,6 @@ const formatt = (date) => {
             text="رفع صورة رقم 2"
           />
         </div>
-
       <BaseDivider />
 
       <BaseButtons class="justify-end">

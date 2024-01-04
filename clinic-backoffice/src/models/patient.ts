@@ -8,7 +8,8 @@ export class Patient {
     name!: string;
     created_at!: Date;
     updated_at!: Date;
-    medical_operation_date!: Date;
+    medical_operation_date!: string;
+    price!: string;
     doctor!: string;
     number_of_days!: number;
     regiment!: Regiment;
@@ -25,6 +26,7 @@ export class Patient {
     checkout!: boolean;
     rest!: number;
     sessions!: number;
+    surgery!: boolean;
   
     constructor(data: Partial<Patient>) {
       Object.assign(this, data);

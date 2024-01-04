@@ -8,7 +8,8 @@ class OrderSerializer(serializers.ModelSerializer):
     patient = serializers.SerializerMethodField('get_patient_data')
 
     def get_patient_data(self, obj):
-        
+        if obj.patient is None:
+            return 'تم حذف المريض'
         date = {
             'id': obj.patient.id,
             'name': obj.patient.name

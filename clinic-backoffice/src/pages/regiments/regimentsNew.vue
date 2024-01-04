@@ -1,270 +1,170 @@
 <script setup lang="ts">
+import {mdiCalendarToday} from '@mdi/js';
+import { LoopingRhombusesSpinner } from 'epic-spinners';
 import { ref, onUnmounted } from 'vue';
-import { useRouter } from 'vue-router';
-import { useAgentStore, useStyleStore, useDiseasesStore, useRegimentStore, useCityStore, usePatientsStore, useStateStore } from '@/stores';
-import type { Patient } from '@/models/patient';
+import { useRoute, useRouter } from 'vue-router';
+import { useRegimentStore, useAgentStore, useDaysStore } from '@/stores';
+import type { Regiment } from '@/models';
 import SectionMain from '@/vendor/Section/SectionMain.vue';
 import CardBox from '@/vendor/CardBox/CardBox.vue';
 import FormField from '@/vendor/Form/FormField.vue';
 import FormControl from '@/vendor/Form/FormControl.vue';
+import FormCheckRadioGroup from '@/vendor/Form/FormCheckRadioGroup.vue';
 import BaseDivider from '@/vendor/Base/BaseDivider.vue';
 import BaseButton from '@/vendor/Base/BaseButton.vue';
 import BaseButtons from '@/vendor/Base/BaseButtons.vue';
-import NotificationBar from '@/vendor/NotificationBar/NotificationBar.vue';
-import DropZone from '@/components/Base/DropZone.vue';
+import CardBoxModal from '@/vendor/CardBox/CardBoxModal.vue';
 import SectionTitleLineWithButton from '@/vendor/Section/SectionTitleLineWithButton.vue';
-import { format } from 'date-fns';
-import VueDatePicker from '@vuepic/vue-datepicker';
-import FormCheckRadioGroup from '@/vendor/Form/FormCheckRadioGroup.vue';
+import NotificationBar from '@/vendor/NotificationBar/NotificationBar.vue';
 
-
-function formatDate(value) {
-  if (value) {
-    return format(new Date(value), 'yyyy-MM-dd');
-  }
-}
-
-
-
-const agentStore = useAgentStore();
-const router = useRouter();
-const store = usePatientsStore();
-const diseaseStore = useDiseasesStore();
-const regimentStore = useRegimentStore();
-const styleStore = useStyleStore();
-const cityStore = useCityStore();
-const statesStore = useStateStore();
-
-const diseases = ref(
-  diseaseStore.list.map((disease) => {
-    return {
-      value: disease.id,
-      label: disease.name,
-    };
-  }),
-);
-
-const regiments = ref(
-  regimentStore.list.map((regiment) => {
-    return {
-      value: regiment.id,
-      label: regiment.name,
-    };
-  }),
-);
-const states = ref(
-  statesStore.list.map((regiment) => {
-    return {
-      value: regiment.id,
-      label: regiment.name,
-    };
-  }),
-);
-const cities = ref();
-
-const img_1 = ref(undefined);
-const img_2 = ref(undefined);
-
-const patient = ref<Patient>({
-  name: '',
-  phone: '',
-  age: 0,
-  number_of_days: 0,
-  medical_operation_date: '',
-  doctor: '',
-  regiment: 0,
-  disease: '',
-  city: '',
-  other_diseases: [],
-} as unknown as Patient);
-  
-
-
-
-onUnmounted(() => {
-  cityStore.filterQuery = '';
-  cityStore.selectedId = undefined;
-  cityStore.unsetFilter();
-});
-
-const search = () => {
-  cityStore.localSearch('state');
-  cities.value = cityStore.filteredList.map((city) => {
-      return {
-        value: city.id,
-        label: city.name,
-      };
-  })
-};
-
-const submit = async () => {
-  patient.value.medical_operation_date = formatDate(patient.value.medical_operation_date);
-  console.log(patient.value);
-  const isCreated = await store.create(patient.value, img_1.value, img_2.value);
-  if (isCreated) {
-    formStatusSubmit();
-    setTimeout(function () {
-      BackHim();
-      router.push('/patients');
-    }, agentStore.timeToKill);
-  } else {
-    formStatusCurrent.value = 2;
-    setTimeout(function () {
-      BackHim();
-    }, agentStore.timeToKill);
-  }
-};
-const BackHim = () => {
-  formStatusCurrent.value = 0;
-};
-
-const formStatusWithHeader = ref(true);
-
-const formStatusCurrent = ref(0);
-
-const formStatusOptions = ['info', 'success', 'danger', 'warning'];
+const store = useRegimentStore();
+const agent = useAgentStore();
+const daysStore = useDaysStore();
 
 const formStatusSubmit = () => {
   formStatusCurrent.value = formStatusOptions[formStatusCurrent.value + 1]
     ? formStatusCurrent.value + 1
     : 0;
 };
-const formatt = (date) => {
-  const day = date.getDate();
-  const month = date.getMonth() + 1;
-  const year = date.getFullYear();
+const deleteRegiment = async () => {
+  const isDeleted = await store.delete(store.editedId!);
+  if (isDeleted) {
+    formStatusSubmit();
+    setTimeout(function () {
+      BackHim();
+      router.push('/regiments');
+    }, agent.timeToKill);
+  } else {
+    formStatusCurrent.value = 2;
+    setTimeout(function () {
+      BackHim();
+    }, agent.timeToKill);
+  }
+};
+const submit = async () => {
+  
+  const isUpdated = await store.create(
+    regiment.value
+  );
+  if (isUpdated) {
+    formStatusSubmit();
+    setTimeout(function () {
+      BackHim();
+      router.push('/regiments');
+    }, agent.timeToKill);
+  } else {
+    formStatusCurrent.value = 2;
+    setTimeout(function () {
+      BackHim();
+    }, agent.timeToKill);
+  }
+};
+const BackHim = () => {
+  formStatusCurrent.value = 0;
+};
+onUnmounted(() => {
+  store.filterQuery = '';
+  store.editedId = undefined;
+  // cityStore.unsetFilter();
+});
 
-  return `${day}/${month}/${year}`;
-}
+const days = ref(
+  daysStore.list.map((day) => {
+    return {
+      value: day.id,
+      label: day.name,
+    };
+  }),
+);
+
+const route = useRoute();
+const router = useRouter();
+
+const modalActive = ref(false);
+const isLoading = ref(true);
+const periods = [
+  { value: 'MORNING', label: 'صباحية' },
+  { value: 'EVENING', label: 'مسائية' },
+] 
+
+const regiment = ref<Regiment>({
+  name: '',
+  id: '',
+  days: [],
+  period: '',
+} as unknown as Regiment);
+isLoading.value = false;
+const formStatusWithHeader = ref(true);
+const formStatusCurrent = ref(0);
+const formStatusOptions = ['info', 'success', 'danger', 'warning'];
 </script>
 
-<template>
-  <SectionMain>
-    <SectionTitleLineWithButton dir="rtl" title="إضافة مريض" main />
-    <CardBox dir="rtl" form @submit.prevent="submit">
-      <div class="flex">
-        <FormField  label="رقم الهاتف" class="ml-3 w-1/2">
-          <FormControl
-            v-model="patient.phone"
-            type="text"
-            placeholder="رقم الهاتف"
-            :required="true"
-          />
-        </FormField>
-        <FormField label="الاسم الكامل" class="w-1/2">
-          <FormControl
-            v-model="patient.name"
-            type="text"
-            placeholder="الاسم الكامل"
-            :required="true"
-          />
-        </FormField>
-      </div>
-      <div class="flex">
-        <FormField label="عدد الحصص" class="ml-3 w-1/2">
-          <FormControl
-              v-model="patient.number_of_days"
-              type="number"
-              placeholder="عدد الحصص"
-              :style="{ direction: 'rtl' }"
-            />
-        </FormField>
-        <FormField dir="rtl" label="العمر" class=" w-1/2">
-            <FormControl
-              v-model="patient.age"
-              type="number"
-              placeholder="العمر "
-            />
-          </FormField>
-      </div>
-      <div class="flex">
-        <FormField dir="rtl" label="تاريخ إجراء العملية" class=" ml-3 w-1/2">
-            <VueDatePicker v-model="patient.medical_operation_date"  :format="formatt" :dark="styleStore.darkMode" />
-          </FormField>
-          <FormField dir="rtl" label="الطبيب" class=" w-1/2">
-            <FormControl
-              v-model="patient.doctor"
-              type="text"
-              placeholder="المرض الأساسي "
-              :style="{ direction: 'rtl' }"
-            />
-          </FormField>
-      </div>
-      <div class="flex mb-4">
-          <FormField dir="rtl" label="الفوج" class="ml-3 w-1/2">
-           <FormControl
-              :options="regiments"
-              v-model="patient.regiment"
-              type="number"
-              placeholder="الفوج"
-              :style="{ direction: 'rtl' }"
-            />
-          </FormField> 
+<template >
+  <div v-if="isLoading" class="flex justify-center items-center h-screen">
+    <looping-rhombuses-spinner :animation-duration="1500" :rhombus-size="20" color="#fff" />
+  </div>
 
-          <FormField dir="rtl" label="مرض" class="w-1/2">
+  <div v-else>
+    <SectionMain  v-if="regiment">
+      <SectionTitleLineWithButton dir="rtl" :title="regiment.name" main />
+      <CardBoxModal
+        v-model="modalActive"
+        title="Please confirm the delete"
+        button-label="Delete"
+        button-cancel-label="Cancel"
+        button="danger"
+        has-cancel
+        @confirm="deleteRegiment"
+      
+      />
+      <CardBox dir="rtl" form @submit.prevent="submit">
+        <div class="flex w-full">
+          <FormField  label="اسم الفوج " class=" ml-3 w-1/2" >
             <FormControl
-              :options="diseases"
-              v-model="patient.disease"
+              v-model="regiment.name"
               type="text"
-              placeholder="مرض"
+              placeholder=" اسم الفوج "
+              :style="{ direction: 'rtl' }"
+            />
+          </FormField>
+          <FormField  label="الفترة " class="w-1/2" >
+            <FormControl
+              v-model="regiment.period"
+              type="text"
+              placeholder="رقم الهاتف "
+              :options="periods"
+              :style="{ direction: 'rtl' }"
             />
           </FormField>
         </div>
-        <div class="flex mb-4">
-           <FormField dir="rtl" label="الولاية" class="ml-3 w-1/2">
-           <FormControl
-              :options="states"
-              v-model="cityStore.filterQuery"
-              placeholder="الولاية"
-              @change="search()"
-            />
-          </FormField>
-          <FormField dir="rtl" label="المدينة" class="ml-3 w-1/2">
-           <FormControl
-              :options="cities"
-              v-model="patient.city"
-              placeholder="اختر الولاية أولا"
-            /> 
-          </FormField>
-        </div>
-        <div dir="rtl" class="w-full h-full p-4 bg-slate-900 mb-4 rounded">
-          <div class=" text-2xl mb-4 font-bold "> أمراض اخرى:</div>
+        <div dir="rtl" class="w-full h-full p-4 dark:bg-slate-900 bg-slate-100 mb-4 rounded">
+          <SectionTitleLineWithButton dir="rtl" :icon="mdiCalendarToday" title="الأيام"  />
           <FormCheckRadioGroup
-            v-model="patient.other_diseases"
+            v-model="regiment.days"
             name="sample-checkbox"
-            :options="diseases"
+            :options="days"
           />
         </div>
-      <div class="flex justify-between">
-          <DropZone
-            v-model="img_1"
-            class="w-[95%]"
-            text="رفع صورة رقم 1"
-          />
-          <DropZone
-            v-model="img_2"
-            class="w-[95%]"
-            text="رفع صورة رقم 2"
-          />
-        </div>
+        <BaseDivider />
 
-      <BaseDivider />
-
-      <BaseButtons dir="rtl" class="justify-end">
-        <BaseButton class=" w-full" type="submit" color="success" label="حفظ" @click="submit" />
-      </BaseButtons>
-    </CardBox>
-    <NotificationBar
-      v-if="formStatusCurrent"
-      :color="formStatusOptions[formStatusCurrent]"
-      :is-placed-with-header="formStatusWithHeader"
-      class="animate-fade-left w-96 right-10 top-20 fixed"
-    >
-      <span
-        ><b class="capitalize">{{ formStatusOptions[formStatusCurrent] }}</b></span
+        <BaseButtons class="flex justify-between">
+          
+          <BaseButton class="mr-0 lg:ml-4  lg:w-[77%] w-full" type="submit" color="success" label="حفظ" @click="submit" />
+          <BaseButton class=" lg:w-[20%] w-full" color="danger" label="حذف" @click="modalActive = true" />
+        </BaseButtons>
+      </CardBox>
+      <NotificationBar
+        v-if="formStatusCurrent"
+        :color="formStatusOptions[formStatusCurrent]"
+        :is-placed-with-header="formStatusWithHeader"
+        class="animate-fade-left w-96 right-10 top-20 fixed"
       >
-    </NotificationBar>
-  </SectionMain>
+        <span>
+          <b class="capitalize">{{ formStatusOptions[formStatusCurrent] }}</b>
+        </span>
+      </NotificationBar>
+    </SectionMain>
+  </div>
 </template>
 
 <style lang="scss">

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import {mdiContentSaveAll, mdiDelete, mdiClipboardList, mdiMedicalBag, mdiBookEdit} from '@mdi/js';
 import { LoopingRhombusesSpinner } from 'epic-spinners';
-import { ref, onUnmounted, onBeforeMount } from 'vue';
+import { ref, onUnmounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { usePatientsStore, useCityStore ,useStateStore,  useAgentStore, useStyleStore, useDiseasesStore, useRegimentStore } from '@/stores';
+import { usePatientsStore, usePriceStore, useCityStore ,useStateStore,  useAgentStore, useStyleStore, useDiseasesStore, useRegimentStore } from '@/stores';
 import type { Patient } from '@/models/patient';
 import SectionMain from '@/vendor/Section/SectionMain.vue';
 import PillTag from '@/vendor/PillTag/PillTag.vue';
@@ -21,20 +21,6 @@ import NotificationBar from '@/vendor/NotificationBar/NotificationBar.vue';
 import { format } from 'date-fns';
 import VueDatePicker from '@vuepic/vue-datepicker';
 
-
-
-function formatDate(value) {
-  if (value) {
-    return format(new Date(value), 'yyyy-MM-dd');
-  }
-}
-
-onBeforeMount(async () => {
-  isLoading.value = true; // Set loading to true while fetching data
-  // cityStore.filterQuery = patient.value.city.state;
-  isLoading.value = false; // Set loading to false after the data has loaded
-});
-
 const store = usePatientsStore();
 const agent = useAgentStore();
 const styleStore = useStyleStore();
@@ -42,8 +28,19 @@ const diseaseStore = useDiseasesStore();
 const regimentStore = useRegimentStore();
 const statesStore = useStateStore();
 const cityStore = useCityStore();
+const priceStore = usePriceStore();
 
-
+const formatt = (date) => {
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+}
+function formatDate(value) {
+  if (value) {
+    return format(new Date(value), 'yyyy-MM-dd');
+  }
+}
 const states = ref(
   statesStore.list.map((state) => {
     return {
@@ -60,7 +57,7 @@ const diseases = ref(
     };
   }),
 );
-const regiment = ref(
+const regiments = ref(
   regimentStore.list.map((regiment) => {
     return {
       value: regiment.id,
@@ -76,13 +73,14 @@ const cities = ref(
       };
   })
 );
-
-onUnmounted(() => {
-  cityStore.filterQuery = '';
-  cityStore.selectedId = undefined;
-  cityStore.unsetFilter();
-});
-
+const prices = ref(
+  priceStore.list.map((price) => {
+    return {
+      value: price.id,
+      label: price.name,
+    };
+  }),
+);
 const search = () => {
   cityStore.localSearch('state');
   cities.value = cityStore.filteredList.map((city) => {
@@ -92,39 +90,6 @@ const search = () => {
       };
   })
 };
-
-const route = useRoute();
-const router = useRouter();
-
-const modalActive = ref(false);
-const isLoading = ref(true);
-
-const img_1 = ref<File | undefined>(undefined);
-const img_2 = ref<File | undefined>(undefined);
-
-
-
-store.editedId = route.params.id.toString();
-const patient = ref<Patient>({
-  name: store.edited?.name,
-  phone: store.edited?.phone,
-  age: store.edited?.age,
-  number_of_days: store.edited?.number_of_days,
-  disease: store.edited?.disease?.id,
-  other_diseases: store.edited?.other_diseases,
-  img_1: store.edited?.img_1,
-  img_2: store.edited?.img_2,
-  presence: store.edited?.presence,
-  medical_operation_date: store.edited?.medical_operation_date,
-  doctor: store.edited?.doctor,
-  regiment: store.edited?.regiment?.id,
-  city: store.edited?.city?.id,
-  rest: store.edited?.rest,
-} as unknown as Patient);
-isLoading.value = false;
-onUnmounted(() => {
-  store.editedId = undefined;
-});
 const deletePatient = async () => {
   const isDeleted = await store.deletePatient(store.editedId!);
   if (isDeleted) {
@@ -141,8 +106,17 @@ const deletePatient = async () => {
   }
 };
 const submit = async () => {
-  
-  patient.value.medical_operation_date = formatDate(patient.value.medical_operation_date);
+  const dateString = formatDate(patient.value.medical_operation_date)?.toString();
+  if (dateString !== undefined) {
+    let medicalOperationDate: string | null;
+
+      if (patient.value.surgery) {
+        medicalOperationDate = null;
+      } else {
+        medicalOperationDate = dateString;
+      }
+      patient.value.medical_operation_date = medicalOperationDate as string;
+  }
   const isUpdated = await store.patch(
     store.editedId!,
     patient.value,
@@ -165,27 +139,53 @@ const submit = async () => {
 const BackHim = () => {
   formStatusCurrent.value = 0;
 };
-
-const formStatusWithHeader = ref(true);
-
-const formStatusCurrent = ref(0);
-
-const formStatusOptions = ['info', 'success', 'danger', 'warning'];
-
 const formStatusSubmit = () => {
   formStatusCurrent.value = formStatusOptions[formStatusCurrent.value + 1]
     ? formStatusCurrent.value + 1
     : 0;
 };
+onUnmounted(() => {
+  cityStore.filterQuery = '';
+  cityStore.selectedId = undefined;
+  cityStore.unsetFilter();
+  store.editedId = undefined;
+});
 
-const formatt = (date) => {
-  const day = date.getDate();
-  const month = date.getMonth() + 1;
-  const year = date.getFullYear();
 
-  return `${day}/${month}/${year}`;
-}
 
+const route = useRoute();
+const router = useRouter();
+
+const modalActive = ref(false);
+const isLoading = ref(true);
+
+const img_1 = ref<File | undefined>(undefined);
+const img_2 = ref<File | undefined>(undefined);
+
+store.editedId = route.params.id.toString();
+const patient = ref<Patient>({
+  name: store.edited?.name,
+  phone: store.edited?.phone,
+  age: store.edited?.age,
+  number_of_days: store.edited?.number_of_days,
+  disease: store.edited?.disease?.id,
+  other_diseases: store.edited?.other_diseases,
+  img_1: store.edited?.img_1,
+  img_2: store.edited?.img_2,
+  presence: store.edited?.presence,
+  medical_operation_date: store.edited?.medical_operation_date,
+  doctor: store.edited?.doctor,
+  regiment: store.edited?.regiment?.id,
+  city: store.edited?.city?.id,
+  rest: store.edited?.rest,
+  price : store.edited?.price,
+  surgery: store.edited?.surgery,
+} as unknown as Patient);
+
+const formStatusWithHeader = ref(true);
+const formStatusCurrent = ref(0);
+const formStatusOptions = ['info', 'success', 'danger', 'warning'];
+isLoading.value = false;
 </script>
 
 <template >
@@ -254,11 +254,20 @@ const formatt = (date) => {
             />
           </FormField>
         </div>
-        <div class="flex">
-          <FormField  label="تاريخ إجراء العملية" class=" ml-3 w-1/2">
-            <VueDatePicker v-model="patient.medical_operation_date" :format="formatt" :dark="styleStore.darkMode" />
+        <div class="flex w-full">
+          <FormField  label="أجرى عملية" class="ml-3 w-[6%]">
+            <FormCheckRadioGroup
+              class="my-5 mx-4"
+              v-model="patient.surgery"
+              type="switch"
+              name="notifications-switch"
+              :options="{ outline: 'Active' }"
+            />
           </FormField>
-          <FormField  label="الطبيب" class=" w-1/2">
+          <FormField  label="تاريخ إجراء العملية" class=" ml-3 w-[47%]">
+            <VueDatePicker :disabled="patient.surgery" v-model="patient.medical_operation_date" :format="formatt" :dark="styleStore.darkMode" />
+          </FormField>
+          <FormField  label="الطبيب" class=" w-[47%]">
             <FormControl
               v-model="patient.doctor"
               type="text"
@@ -269,19 +278,28 @@ const formatt = (date) => {
           
         </div>
         <div class="flex mb-4">
-          <FormField  label="الفوج" class="ml-3 w-1/2">
-            <FormControl
+          <FormField dir="rtl" label="الفوج" class="ml-3 w-1/3">
+           <FormControl
+              :options="regiments"
               v-model="patient.regiment"
-              :options="regiment"
-              type="text"
-              placeholder="مرض"
+              type="number"
+              placeholder="الفوج"
+              :style="{ direction: 'rtl' }"
+            />
+          </FormField> 
+          <FormField dir="rtl" label="الفئة" class="ml-3 w-1/3">
+           <FormControl
+              :options="prices"
+              v-model="patient.price"
+              type="number"
+              placeholder="الفوج"
+              :style="{ direction: 'rtl' }"
             />
           </FormField>
-
-          <FormField dir="rtl" label="مرض" class=" w-1/2">
+          <FormField dir="rtl" label="مرض" class="w-1/3">
             <FormControl
-              v-model="patient.disease"
               :options="diseases"
+              v-model="patient.disease"
               type="text"
               placeholder="مرض"
             />

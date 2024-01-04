@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { mdiClipboardList, mdiMagnify, mdiDiamondStone, mdiCash, mdiAccountMultiple, mdiCurrencyUsd, mdiCashMultiple } from '@mdi/js';
+import { mdiMagnify, mdiDiamondStone, mdiCash, mdiCurrencyUsd, mdiCashMultiple } from '@mdi/js';
 import { onBeforeMount, ref, onUnmounted } from 'vue';
-import { useAgentStore, useOrdersStore, useStyleStore } from '@/stores';
+import { useOrdersStore, useStyleStore } from '@/stores';
 import SectionMain from '@/vendor/Section/SectionMain.vue';
 import SectionTitleLineWithButton from '@/vendor/Section/SectionTitleLineWithButton.vue';
 import TableOrders from '@/components/Tables/TableOrders.vue';
 import CardBox from '@/vendor/CardBox/CardBox.vue';
+import CardBoxComponentEmpty from '@/vendor/CardBox/CardBoxComponentEmpty.vue';
 import BaseButtons from '@/vendor/Base/BaseButtons.vue';
 import BaseButton from '@/vendor/Base/BaseButton.vue';
 import CardBoxWidget from '@/vendor/CardBox/CardBoxWidget.vue';
@@ -13,36 +14,43 @@ import { format } from 'date-fns';
 import VueDatePicker from '@vuepic/vue-datepicker';
 
 const store = useOrdersStore();
-const agent = useAgentStore();
 const styleStore = useStyleStore();
+
+
+const query = ref(formatDate(new Date()));
 const currentDate = new Date();
+let searching = ref(false);
+const isLoading = ref(false);
+const totalofMonth = ref<any>(0);
+const totalofYear = ref<number>(0);
+const totalofDay = ref<number>(0);
 
 function formatDate(value) {
   if (value) {
     return format(new Date(value), 'yyyy-MM-dd');
   }
 }
-
-
-let searching = ref(false);
-const isLoading = ref(false);
-
 const reset = () => {
   store.filterQuery = '';
 };
-const totalofMonth = ref<any>(0);
-const totalofYear = ref<number>(0);
-const totalofDay = ref<number>(0);
 
-const query = ref(formatDate(new Date()));
+
 
 onBeforeMount(async () => {
-  isLoading.value = true; // Set loading to true while fetching data
+  isLoading.value = true;
+  const urlParams = new URLSearchParams(window.location.search);
+  const dateParam = urlParams.get('date');
+
   const dateString = formatDate(currentDate)?.toString();
   if (dateString !== undefined) {
-      await store.fetchAll(dateString);
-      try {
-      totalofDay.value = await store.fetchTotal(dateString);
+       try { 
+        if (dateParam  != undefined) {
+          await store.fetchAll(dateParam);
+          totalofDay.value = await store.fetchTotal(dateParam);
+        } else {
+          totalofDay.value = await store.fetchTotal(dateString);
+          await store.fetchAll(dateString);
+        }
       totalofMonth.value = await store.fetchTotal('month');
       totalofYear.value = await store.fetchTotal('year');
       } catch (error) {
@@ -52,11 +60,8 @@ onBeforeMount(async () => {
     console.error('Date string is undefined');
   }
 
-  console.log(await store.fetchTotal('month'));
-  // totalofYear = await store.fetchTotal('year');
-  isLoading.value = false; // Set loading to false after the data has loaded
+  isLoading.value = false;
 });
-
 onUnmounted(() => {
   store.filterQuery = '';
   store.selectedId = undefined;
@@ -68,7 +73,6 @@ const stopSearching = () => {
   store.selectedId = undefined;
   store.unsetFilter();
 };
-
 const formatt = (date) => {
   const day = date.getDate();
   const month = date.getMonth() + 1;
@@ -76,30 +80,8 @@ const formatt = (date) => {
 
   return `${day}/${month}/${year}`;
 }
-
-// const search = (async () =>{
-//   const date = ref<string>(); 
-//   const formattedDate  = formatDate(query.value);
-//   date.value = formattedDate.toString();
-//   await store.fetchAll(date.value);
-// });
-
 const search = async () => {
-  try {
-    const date = ref<string>();
-    const formattedDate = formatDate(query.value); // Assuming formatDate returns a Date
-
-    if (formattedDate) {
-      date.value = formattedDate.toString();
-      await store.fetchAll(date.value);
-    } else {
-      console.error('Formatted date is undefined');
-      // Handle the case when formattedDate is undefined
-    }
-  } catch (error) {
-    console.error('Error in search:', error);
-    // Handle error if store.fetchAll fails
-  }
+  window.location.href = `/orders?date=${formatDate(query.value)}`;
 };
 </script>
 
@@ -123,7 +105,6 @@ const search = async () => {
                 <BaseButton v-if="searching"
                   label="بحث"
                   color="contrast"
-                  to="/records/presences"
                   class="font-medium mr-2"
                   @click="search"
                 />
@@ -136,7 +117,7 @@ const search = async () => {
           color="text-emerald-500"
           :icon="mdiCurrencyUsd"
           :number="totalofDay"
-          label="يومي"
+          label="اليوم"
         />
         <CardBoxWidget
           class="w-1/3 ml-2"
@@ -156,9 +137,11 @@ const search = async () => {
         />
     </div>
 
-    
-    <CardBox class="mb-6" has-table>
+    <CardBox v-if="store.filteredList && store.filteredList.length > 0"  class="mb-6" has-table>
       <TableOrders :orders="store.filteredList" :loading="isLoading" />
+    </CardBox>
+    <CardBox v-else >
+      <CardBoxComponentEmpty /> 
     </CardBox>
   </SectionMain>
 </template>

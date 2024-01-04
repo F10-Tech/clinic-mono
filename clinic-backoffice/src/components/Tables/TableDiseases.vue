@@ -95,6 +95,7 @@ const selectId = (id: string) => {
   </div>
   <div v-else>
     <CardBoxModal
+      dir="ltr"
         v-model="modalActive"
         title="هل تريد حذف المرض؟"
         button-label="حذف"

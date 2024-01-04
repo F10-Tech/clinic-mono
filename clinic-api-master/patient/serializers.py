@@ -15,18 +15,14 @@ class PatientSerializer(serializers.ModelSerializer):
     presence = serializers.SerializerMethodField('get_presence_data')
 
     def get_sessions_data(self, obj):
-        presence = Presence.objects.filter(patient=obj.id)
+        presence = Presence.objects.filter(patient= obj.id)
         if obj.price != None:
             price = Price.objects.get(id = obj.price.id)
             if presence.count() == 0 and obj.rest == 0:
-                return obj.number_of_days
-            if presence.count() > 0:
-                return math.floor( ( obj.number_of_days - (obj.rest / price.price ))  - presence.count())
-        return 0
-        
-       
-        # obj.rest =  presence.count() * obj.price.price
-        return (presence.count() - obj.rest) / price.price
+                    return obj.number_of_days
+                    
+            return math.floor( ( obj.number_of_days - (obj.rest / price.price ))  - presence.count())
+        return  0
 
     def get_state_data(self, obj):
         if obj.number_of_days == 0:
@@ -67,7 +63,6 @@ class PatientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Patient
         fields = '__all__'
-
 
 class ListPatientByRegimentSerializer(serializers.ModelSerializer):
 
@@ -159,13 +154,13 @@ class CreatePatientSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Patient
-        fields = ['id', 'name', 'age', 'phone', 'medical_operation_date', 'doctor', 'number_of_days', 'regiment', 'disease', 'other_diseases', 'city', 'rest']
+        fields = ['id', 'name', 'age', 'phone','price', 'medical_operation_date', 'doctor', 'number_of_days', 'regiment', 'disease', 'other_diseases', 'city', 'rest', 'surgery']
 
 class UpdatePatientSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Patient
-        fields = ['name', 'age', 'phone', 'medical_operation_date', 'doctor', 'number_of_days', 'regiment', 'disease', 'other_diseases', 'city']
+        fields = ['name', 'age', 'phone', 'medical_operation_date', 'doctor', 'number_of_days', 'regiment', 'disease', 'other_diseases', 'city', 'rest', 'surgery', 'price']
 
 class UpdateImgsSerializer(serializers.ModelSerializer):
     
@@ -201,7 +196,6 @@ class CreatePresenceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Presence
         fields = ['patient']
-
 
 class DiseaseSerializer(serializers.ModelSerializer):
 

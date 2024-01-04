@@ -40,4 +40,7 @@ urlpatterns = [
     # days/
     path('days/', views.ListOfDays),
 
+    # price/
+    path('price/', views.ListOfPrice),
+
 ]

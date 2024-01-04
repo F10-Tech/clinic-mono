@@ -6,3 +6,4 @@ export * from './presence';
 export * from './state';
 export * from './order';
 export * from './day';
+export * from './price';
