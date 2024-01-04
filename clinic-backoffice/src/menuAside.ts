@@ -5,6 +5,7 @@ import {
   mdiCashClock ,
   mdiAccount,
   mdiMedicalBag,
+  mdiCash,
 } from '@mdi/js';
 
 export default [
@@ -37,6 +38,11 @@ export default [
     to: '/orders',
     label: 'الدفع',
     icon: mdiCashClock ,
+  },
+  {
+    to: '/prices',
+    label: 'فئة الاسعار',
+    icon: mdiCash ,
   },
   // {
   //   to: '/clients',
