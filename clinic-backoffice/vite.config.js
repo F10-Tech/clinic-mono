@@ -17,3 +17,8 @@ export default defineConfig(({ mode }) => {
     },
   };
 });
+
+
+   // "dev": "vite --host spa.earthmeta.ai --port 443",
+    // "view": "vite preview --host spa.earthmeta.ai",
+    // 127.0.0.1 spa.earthmeta.ai
