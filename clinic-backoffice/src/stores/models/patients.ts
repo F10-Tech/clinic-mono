@@ -31,23 +31,19 @@ export const usePatientsStore = defineStore('patients', {
       }
       return true;
     },
-    async fetchOne(id: string): Promise<Boolean> {
-      try {
-        const axios = await api.raw();
-        const { data } = await axios.get(apiUrl + '/order/one/' + id);
-        return data;
-      } catch (error: any) {
-        const message = error.response.data.message;
-        return false;
-      }
-    },
     async create(
       one: Patient,
       img_1: File | null = null,
       img_2: File | null = null,
     ): Promise<Boolean> {
       try {
-        const { data } = await api.post(one);
+        const axios = await api.raw();
+        const { data } = await axios.post(apiUrl + '/patient/create/' , one, {
+          headers: {
+            // 'Content-Type': 'multipart/json',
+            Authorization: `JWT ${agentStore.accessToken}`,
+          },
+        });
         if (data) {
           if (img_1) {
             const formData = new FormData();
