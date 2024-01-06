@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {mdiContentSaveAll, mdiDelete, mdiClipboardList, mdiMedicalBag, mdiBookEdit} from '@mdi/js';
+import {mdiContentSaveAll, mdiDelete, mdiClipboardList, mdiMedicalBag, mdiBookEdit, mdiPrinter} from '@mdi/js';
 import { LoopingRhombusesSpinner } from 'epic-spinners';
 import { ref, onUnmounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -180,12 +180,100 @@ const patient = ref<Patient>({
   rest: store.edited?.rest,
   price : store.edited?.price,
   surgery: store.edited?.surgery,
+  created_at: store.edited?.created_at,
 } as unknown as Patient);
 
 const formStatusWithHeader = ref(true);
 const formStatusCurrent = ref(0);
 const formStatusOptions = ['info', 'success', 'danger', 'warning'];
 isLoading.value = false;
+
+const getImageAsBase64 = async (url) => {
+  const response = await fetch(url);
+  const blob = await response.blob();
+
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+};
+const generatePdf = async  () => {
+  const imageUrl_1 = '../../public/assets/images/gg.jpg';
+  const imageUrl_2 = '../../public/assets/images/logo_2.png';
+  const imageUrl_3 = '../../public/assets/images/logoo.png';
+  const base64Image = await  getImageAsBase64(imageUrl_1);
+  const base64Image_2 = await  getImageAsBase64(imageUrl_2);
+  const base64Image_3 = await  getImageAsBase64(imageUrl_3);
+  const shippingSlip = `<div>
+  <div style="display: flex; justify-content: space-between; margin-top: 0px; margin-bottom: 0px;">
+      <img src="${base64Image}" style="width: 7rem; background-size: cover;">
+      <h1 class="font-bold my-auto text-lg"> مركز سوف للعلاج الطبيعي و الفزيولوجي </h1>
+      <img src="${base64Image_2}" style="width: 7rem; background-size: cover;">
+    </div>
+    <div style=" display: flex; justify-content: space-between; height: 10rem">
+      <div style="margin: auto;width: 30%; ">
+        <h1 style="--tw-bg-opacity: 1;  font-size: 1rem;">Djarmonune Abd Elhakim</h1>
+        <h1 style="font-size: 0.75rem">Kinesitherapeute</h1>
+      </div>
+      <div  style="display: flex;width: 50%;"> 
+        <img src="${base64Image_3}" style="width: 10rem; background-size: cover; margin-left: auto; margin-right: auto;" >
+      </div>
+      <div style="margin: auto;width: 20%; ">
+        <h1 style="--tw-bg-opacity: 1;text-align: right;  font-size: 1rem"> جرمون عبد الحكيم</h1>
+        <h1 style="font-size: 0.75rem; margin-left: 2rem;">العلاج الطبيعي والفزيولوجي</h1>
+      </div>
+    </div>
+    <hr >
+    <div style="display: flex;margin: 0rem;  margin-left: auto; margin-right: auto;">
+      <h1  style="font-size: 4.5rem;margin: 0rem; margin-left: auto; margin-right: auto; ">تقريــر</h1>
+    </div>
+    <div style="font-size: 1.5rem;display: flex;margin-top: 2rem; margin-bottom: 2rem; width: 100%; text-align: right; ">
+      <div style="margin-left: auto; margin-right: auto;">
+          <p style="margin-bottom: 1rem; line-height: 3rem">
+            انا الممضي أسفله السيد : <span style=" font-weight: 700;"> جرمون عبد الحكيم</span>       
+            أخصــائي العــلاج الطبيعــي و الفـزيــولــوجــي
+            يشهد أن السيد : <span style=" font-weight: 700;"> ${patient.value.name}</span>
+            المــولــود بــتــاريــخ : <span style=" font-weight: 700;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            يزاول العلاج بمركزنا من تاريخ : <span style=" font-weight: 700;"> ${formatDate(patient.value.created_at)}</span> 
+           الى تاريخ 
+          </p>
+          <p style="margin-bottom: 3rem; line-height: 3rem">
+            :ملاحظات
+          </p>
+          <p style="margin: 0rem;">
+            .منح هدا التقرير لاستعماله فيما يسمح به النطاق القانوني
+          </p>
+          <div style="display: flex; justify-content: space-between;">
+              <p style="margin-left: 4rem; margin-bottom: 3rem"  >
+                الوادي في
+              </p>
+              <p style="height: 1rem; margin-bottom: 3rem">
+                .الختم والإمضاء
+              </p>
+             
+          </div> 
+      </div>
+    </div>
+    <hr >
+        <div style="display: flex; justify-content: space-between;">
+              <p style=" line-height: 1rem;">
+               ${'06 66 57 58 69'} :الهاتف  
+              </p>
+              <p style=" line-height: 1rem;"  >
+                حي النزلة - بالقرب من صيدلية الاشعري - الوادي
+              </p>
+          </div> 
+  </div> `;
+    const print = window.open("", "_blank"); 
+    if (print) {
+      print.document.write(shippingSlip);
+      print.document.close();
+      print.print();
+    }
+    
+};
 </script>
 
 <template >
@@ -198,12 +286,14 @@ isLoading.value = false;
       <SectionTitleLineWithButton :icon="mdiBookEdit" dir="rtl" title="الملف الشخصي للمريض" main >
         <div class="flex">
           <h1 class="mx-4 text-2xl">
-          الباقي :
+          الباقي : 
           </h1>
         
           
           <PillTag  class="text-2xl rounded-sm"   color="danger" :label="`${patient.rest} دج`" />
         </div>
+        
+        <BaseButton :icon="mdiPrinter" class=" lg:w-[20%] w-full" color="" label="طباعة التقرير" @click="generatePdf" />
 
       </SectionTitleLineWithButton>
       <CardBoxModal
@@ -333,9 +423,11 @@ isLoading.value = false;
           />
         </div>
         <div class="w-full h-full p-4 dark:bg-slate-900 bg-slate-100 mb-4 rounded">
-          <SectionTitleLineWithButton :icon="mdiClipboardList" dir="rtl" title=" الحضور:" />
+          
+          <SectionTitleLineWithButton :icon="mdiClipboardList" dir="rtl" title=" الحضور:" >
 
-          <!-- <div class=" text-2xl mb-4 font-bold "> الحضور:</div> -->
+            <!-- <BaseButton :icon="mdiPrinter" class=" lg:w-[20%] w-full" color="" label="طباعة الحضور" @click="generatePdf" /> -->
+          </SectionTitleLineWithButton>
           <div class=" ml-4 mb-2 text-xl flex" v-for="one in patient.presence" :key="one.id">
               - <div v-if="one.day == 'Thursday' " class="mx-2">
                       الخميس 
