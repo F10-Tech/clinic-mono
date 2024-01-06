@@ -106,7 +106,7 @@ const formStatusOptions = ['info', 'success', 'danger', 'warning'];
 
   <div v-else>
     <SectionMain  v-if="regiment">
-      <SectionTitleLineWithButton dir="rtl" :title="regiment.name" main />
+      <SectionTitleLineWithButton dir="rtl" title="إضافة فوج" main />
       <CardBoxModal
         v-model="modalActive"
         title="Please confirm the delete"
