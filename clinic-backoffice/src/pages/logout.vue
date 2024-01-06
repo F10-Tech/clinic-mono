@@ -4,7 +4,8 @@ import { useRouter } from 'vue-router';
 
 import {
   useAgentStore,
-  useMainStore,
+
+  useMainStore
 } from '@/stores';
 
 const mainStore = useMainStore();

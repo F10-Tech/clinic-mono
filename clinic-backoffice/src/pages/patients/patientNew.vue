@@ -80,19 +80,17 @@ const search = () => {
   })
 };
 const submit = async () => {
-  // console.log(patient.value);
-  const dateString = formatDate(patient.value.medical_operation_date)?.toString();
-  if (dateString !== undefined) {
-    let medicalOperationDate: string | null;
-
-      if (patient.value.surgery) {
-        medicalOperationDate = null;
-      } else {
-        medicalOperationDate = dateString;
+  if (!patient.value.surgery) {
+    patient.value.medical_operation_date = null as unknown as string;
+  } 
+  else {
+        const dateString = formatDate(patient.value.medical_operation_date)?.toString();
+      if (dateString !== undefined) {
+        let medicalOperationDate: string | null;
+            medicalOperationDate = dateString;
+            patient.value.medical_operation_date = medicalOperationDate as string;
       }
-      patient.value.medical_operation_date = medicalOperationDate as string;
   }
-  console.log(patient.value);
   const isCreated = await store.create(patient.value, img_1.value, img_2.value);
   if (isCreated) {
     formStatusSubmit();
@@ -195,7 +193,7 @@ const patient = ref<Patient>({
             />
           </FormField>
           <FormField  label="تاريخ إجراء العملية" class=" ml-3 w-[47%]">
-            <VueDatePicker :disabled="patient.surgery" v-model="patient.medical_operation_date" :format="formatt" :dark="styleStore.darkMode" />
+            <VueDatePicker :disabled="!patient.surgery" v-model="patient.medical_operation_date" :format="formatt" :dark="styleStore.darkMode" />
           </FormField>
           <FormField  label="الطبيب" class=" w-[47%]">
             <FormControl

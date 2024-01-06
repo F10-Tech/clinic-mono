@@ -111,9 +111,9 @@ const submit = async () => {
     let medicalOperationDate: string | null;
 
       if (patient.value.surgery) {
-        medicalOperationDate = null;
-      } else {
         medicalOperationDate = dateString;
+      } else {
+        medicalOperationDate = null;
       }
       patient.value.medical_operation_date = medicalOperationDate as string;
   }
@@ -327,7 +327,14 @@ const generatePdf = async  () => {
           </FormField>
         </div>
         <div class="flex">
-          <FormField  label="عدد الحصص" class="ml-3 w-1/2">
+          <FormField  label="العمر" class="ml-3 w-1/2">
+            <FormControl
+              v-model="patient.age"
+              type="number"
+              placeholder="العمر "
+            />
+          </FormField>
+          <FormField  label="عدد الحصص" class=" w-1/2">
             <FormControl
               v-model="patient.number_of_days"
               type="number"
@@ -336,13 +343,7 @@ const generatePdf = async  () => {
             />
           </FormField>
 
-          <FormField  label="العمر" class=" w-1/2">
-            <FormControl
-              v-model="patient.age"
-              type="number"
-              placeholder="العمر "
-            />
-          </FormField>
+          
         </div>
         <div class="flex w-full">
           <FormField  label="أجرى عملية" class="ml-3 w-[6%]">
@@ -355,7 +356,7 @@ const generatePdf = async  () => {
             />
           </FormField>
           <FormField  label="تاريخ إجراء العملية" class=" ml-3 w-[47%]">
-            <VueDatePicker :disabled="patient.surgery" v-model="patient.medical_operation_date" :format="formatt" :dark="styleStore.darkMode" />
+            <VueDatePicker :disabled="!patient.surgery" v-model="patient.medical_operation_date" :format="formatt" :dark="styleStore.darkMode" />
           </FormField>
           <FormField  label="الطبيب" class=" w-[47%]">
             <FormControl

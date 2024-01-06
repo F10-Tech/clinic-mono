@@ -55,7 +55,7 @@ def CreatePatient(request):
     if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
-    return Response(status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['DELETE'])
 # @permission_classes([IsAuthenticated])
@@ -72,7 +72,7 @@ def UpdatePatient(request, pk):
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data)
-    return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
 # @permission_classes([IsAuthenticated])
@@ -82,7 +82,7 @@ def UpdateImgs(request, pk):
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data)
-    return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
 # @permission_classes([IsAuthenticated])
@@ -104,7 +104,7 @@ def CreatePresence(request):
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data)
-    return Response(status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['DELETE'])
 # @permission_classes([IsAuthenticated])
@@ -128,7 +128,7 @@ def CreateDisease(request):
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data, status.HTTP_201_CREATED)
-    return Response(status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['DELETE'])
 # @permission_classes([IsAuthenticated])
@@ -154,7 +154,7 @@ def CreateState(request):
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data)
-    return Response(status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['DELETE'])
 # @permission_classes([IsAuthenticated])
@@ -178,7 +178,7 @@ def CreateCity(request):
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data)
-    return Response(status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['DELETE'])
 # @permission_classes([IsAuthenticated])
@@ -205,7 +205,7 @@ def CreateRegiment(request):
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data)
-    return Response(status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['DELETE'])
 # @permission_classes([IsAuthenticated])
@@ -223,7 +223,7 @@ def UpdateRegiment(request, pk):
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data)
-    return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
 # @permission_classes([IsAuthenticated])
@@ -246,7 +246,7 @@ def CreatePrice(request):
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data)
-    return Response(status.HTTP_400_BAD_REQUEST) 
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['DELETE'])
 # @permission_classes([IsAuthenticated])

@@ -14,6 +14,13 @@ class PatientSerializer(serializers.ModelSerializer):
     sessions = serializers.SerializerMethodField('get_sessions_data')
     presence = serializers.SerializerMethodField('get_presence_data')
 
+    # def get_remaining_data(self, obj):
+    #     presence = Presence.objects.filter(patient= obj.id)
+    #     cont =  obj.number_of_days - presence.count()
+    #     if cont > 0:
+    #         return cont
+    #     return 0
+
     def get_sessions_data(self, obj):
         presence = Presence.objects.filter(patient= obj.id)
         if obj.price != None:
@@ -25,11 +32,13 @@ class PatientSerializer(serializers.ModelSerializer):
         return  0
 
     def get_state_data(self, obj):
-        if obj.number_of_days == 0:
+        presence = Presence.objects.filter(patient= obj.id)
+        cont =  obj.number_of_days - presence.count()
+        if cont == 0:
             obj.regiment = None
             obj.save()
             return "CANCELLED"
-        elif obj.number_of_days < 4 and obj.number_of_days > 0:
+        elif cont < 4 and cont > 0:
             return "IN_PROGRESS"
         else:
             return "COMPLETED"
@@ -75,14 +84,14 @@ class ListPatientByRegimentSerializer(serializers.ModelSerializer):
     sessions = serializers.SerializerMethodField('get_sessions_data')
 
     def get_sessions_data(self, obj):
-        presence = Presence.objects.filter(patient=obj.id)
+        presence = Presence.objects.filter(patient= obj.id)
         if obj.price != None:
             price = Price.objects.get(id = obj.price.id)
             if presence.count() == 0 and obj.rest == 0:
-                return obj.number_of_days
-            if presence.count() > 0:
-                return math.floor( ( obj.number_of_days - (obj.rest / price.price ))  - presence.count())
-        return 0
+                    return obj.number_of_days
+                    
+            return math.floor( ( obj.number_of_days - (obj.rest / price.price ))  - presence.count())
+        return  0
 
 
     def get_checkout_data(self, obj):
@@ -243,7 +252,7 @@ class CreateRegimentSerializer(serializers.ModelSerializer):
     
         class Meta:
             model = Regiment
-            fields = ['name','days']
+            fields = ['name','days','period']
 
 class PriceSerializer(serializers.ModelSerializer):
     
