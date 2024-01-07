@@ -183,7 +183,7 @@ const patient = ref<Patient>({
         </FormField>  
       </div>
       <div class="flex w-full">
-          <FormField  label="أجرى عملية" class="ml-3 w-[6%]">
+          <FormField  label="أجرى عملية" class="ml-3 w-[8%]">
             <FormCheckRadioGroup
               class="my-5 mx-4"
               v-model="patient.surgery"
@@ -192,10 +192,10 @@ const patient = ref<Patient>({
               :options="{ outline: 'Active' }"
             />
           </FormField>
-          <FormField  label="تاريخ إجراء العملية" class=" ml-3 w-[47%]">
+          <FormField  label="تاريخ إجراء العملية" class=" ml-3 w-[46%]">
             <VueDatePicker :disabled="!patient.surgery" v-model="patient.medical_operation_date" :format="formatt" :dark="styleStore.darkMode" />
           </FormField>
-          <FormField  label="الطبيب" class=" w-[47%]">
+          <FormField  label="الطبيب" class=" w-[46%]">
             <FormControl
               v-model="patient.doctor"
               type="text"

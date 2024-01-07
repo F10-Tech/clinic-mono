@@ -32,7 +32,7 @@ const submit = async () => {
     await agentStore.login(form.login, form.pass);
     router.push('/services');
   } catch (error) {
-    errorMessage.value = 'Failed to login. Please check your credentials.';
+    errorMessage.value = 'خطأ في اسم المستخدم أو كلمة المرور';
   } finally {
     isLoading.value = false; // Ensure spinner is deactivated whether login succeeds or fails
   }
@@ -45,10 +45,11 @@ const submit = async () => {
       <looping-rhombuses-spinner :animation-duration="1500" :rhombus-size="20" color="#fff" />
     </div>
     <div v-else>
-      <SectionFullScreen v-slot="{ cardClass }" bg="purplePink">
+      <SectionFullScreen class="block"  dir="rtl" v-slot="{ cardClass }" bg="purplePink">
+        <div></div>
         <CardBox :class="cardClass" is-form @submit.prevent="submit">
           <div v-if="errorMessage" class="text-red-500 mb-4">{{ errorMessage }}</div>
-          <FormField label="Username" help="Please enter your username">
+          <FormField label="الأسم" help="أدخل الأسم">
             <FormControl
               v-model="form.login"
               :icon="mdiAccount"
@@ -57,7 +58,7 @@ const submit = async () => {
             />
           </FormField>
 
-          <FormField label="Password" help="Please enter your password">
+          <FormField label="كلمة المرور" help="ادخل كلمة السر">
             <FormControl
               v-model="form.pass"
               :icon="mdiAsterisk"
@@ -67,20 +68,17 @@ const submit = async () => {
             />
           </FormField>
 
-          <FormCheckRadio
-            v-model="form.remember"
-            name="remember"
-            label="Remember"
-            :input-value="true"
-          />
 
           <template #footer>
             <BaseButtons>
-              <BaseButton type="submit" color="info" label="Login" />
-              <BaseButton to="/" color="info" outline label="Back" />
+              <BaseButton type="submit" color="info" label="الدخول" />
             </BaseButtons>
+            <div class=" text-slate-600">
+              تم التطوير بواسطة F10 Tech
+            </div>
           </template>
         </CardBox>
+        
       </SectionFullScreen>
     </div>
   </LayoutGuest>

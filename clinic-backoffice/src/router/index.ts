@@ -4,7 +4,7 @@ import { useAgentStore } from '@/stores/models/agent';
 const routes = [
   {
     meta: {
-      title: 'Patients',
+      title: 'المرضى',
       requiresAuth: true,
     },
     path: '/patients',
@@ -30,7 +30,7 @@ const routes = [
   },
   {
     meta: {
-      title: 'Orders',
+      title: 'الدفع',
       requiresAuth: true,
     },
     path: '/orders',
@@ -46,7 +46,7 @@ const routes = [
   },
   {
     meta: {
-      title: 'Prices',
+      title: 'فئة الأسعار',
       requiresAuth: true,
     },
     path: '/prices',
@@ -67,7 +67,7 @@ const routes = [
   },
   {
     meta: {
-      title: 'Diseases',
+      title: 'الأمراض',
       requiresAuth: true,
     },
     path: '/diseases',
@@ -88,7 +88,7 @@ const routes = [
   },
   {
     meta: {
-      title: 'Record presences',
+      title: 'تسجل الحضور',
       requiresAuth: true,
     },
     path: '/records',
@@ -109,7 +109,7 @@ const routes = [
   },
   {
     meta: {
-      title: 'Regiments',
+      title: 'الأفواج',
       requiresAuth: true,
     },
     path: '/regiments',

@@ -1,5 +1,5 @@
 <script setup>
-import { mdiLogout, mdiClose } from '@mdi/js';
+import { mdiLogout, mdiClose,mdiAsterisk } from '@mdi/js';
 import { computed } from 'vue';
 import { useStyleStore } from '@/stores/style';
 import AsideMenuList from '@/vendor/AsideMenu/AsideMenuList.vue';
@@ -18,7 +18,7 @@ const emit = defineEmits(['menu-click', 'aside-lg-close-click']);
 const styleStore = useStyleStore();
 
 const logoutItem = computed(() => ({
-  label: 'Logout',
+  label: 'تسجيل الخروج',
   icon: mdiLogout,
   color: 'info',
   isLogout: true,
@@ -46,8 +46,12 @@ const asideLgCloseClick = (event) => {
         :class="styleStore.asideBrandStyle"
         class="flex flex-row h-14 items-center justify-between dark:bg-slate-900"
       >
-        <div class="text-center flex-1 lg:text-left lg:pl-6 xl:text-center xl:pl-0">
-          <b class="font-black">Centre Souf</b>
+        <div class="text-center flex lg:text-left lg:pl-6 xl:text-center xl:pl-0 ">
+          <div class="mx-10 flex">
+            <img src="../.././../public/assets/images/logoo.png"  class="w-10">
+          <b class="font-black mt-2 ml-2">Centre Souf</b>
+          </div>
+          
         </div>
         <button class="hidden lg:inline-block xl:hidden p-3" @click.prevent="asideLgCloseClick">
           <BaseIcon :path="mdiClose" />

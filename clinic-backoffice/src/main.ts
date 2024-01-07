@@ -36,7 +36,7 @@ if (
 }
 
 /* Default title tag */
-const defaultDocumentTitle = 'Clinic Backoffice ';
+const defaultDocumentTitle = 'Centre Souf';
 
 /* Set document title from route meta */
 router.afterEach((to) => {
