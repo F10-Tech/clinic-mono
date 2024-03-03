@@ -31,6 +31,20 @@ export const usePatientsStore = defineStore('patients', {
       }
       return true;
     },
+    async fetchByRegiments(id: string): Promise<Boolean> {
+      try {
+        const axios = await api.raw();
+        const { data } = await axios.get(apiUrl + '/patient/regiments/' + id);
+        console.log('data' + data);
+        const { all, order } = convertToDict(data);
+        this.all = all;
+        this.order = order;
+      } catch (error: any) {
+        return false;
+      }
+      return true;
+    },
+
     async create(
       one: Patient,
       img_1: File | null = null,

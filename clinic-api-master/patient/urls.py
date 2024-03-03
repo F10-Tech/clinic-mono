@@ -4,6 +4,7 @@ from . import views
 urlpatterns = [
     # patient/
     path('', views.ListOfPatient),
+    path('regiments/<str:pk>', views.ListOfPatientByRegimentID),
     path('create/', views.CreatePatient),
     path('<str:pk>/delete', views.DeletePatient),
     path('<str:pk>/update', views.UpdatePatient),
@@ -44,5 +45,11 @@ urlpatterns = [
     path('price/', views.ListOfPrice),
     path('price/create/', views.CreatePrice),
     path('price/<str:pk>/delete', views.DeletePrice),
+
+    # doctor/
+    path('doctor/', views.ListOfDoctor),
+    path('doctor/create/', views.CreateDoctor),
+    path('doctor/<str:pk>/delete', views.DeleteDoctor),
+
 
 ]

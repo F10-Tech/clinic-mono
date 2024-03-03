@@ -23,6 +23,14 @@ def DetailPatient(request, pk):
 
 @api_view(['GET'])
 # @permission_classes([IsAuthenticated])
+def ListOfPatientByRegimentID(request, pk):
+    
+    patients = Patient.objects.filter(regiment=pk)
+    serializer = PatientSerializer(patients, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+# @permission_classes([IsAuthenticated])
 def ListOfPatientByRegiment(request):
     current_datetime = datetime.now()
     hour = current_datetime.hour - 1
@@ -67,6 +75,15 @@ def DeletePatient(request, pk):
 @api_view(['PATCH'])
 # @permission_classes([IsAuthenticated])
 def UpdatePatient(request, pk):
+    if request.data['price'] != None:
+        patient = Patient.objects.get(id=pk)
+        if patient.number_of_days < request.data['number_of_days'] :
+            price = Price.objects.get(id=request.data['price'])
+            request.data['rest'] =  patient.rest + (price.price * ( request.data['number_of_days']  - patient.number_of_days ))
+        elif patient.number_of_days > request.data['number_of_days'] :
+            price = Price.objects.get(id=request.data['price'])
+            request.data['rest'] =  patient.rest - (price.price * ( patient.number_of_days  -  request.data['number_of_days'] ))
+        
     patient = Patient.objects.get(id=pk)
     serializer = UpdatePatientSerializer(patient, data=request.data, partial=True)
     if serializer.is_valid():
@@ -254,4 +271,29 @@ def DeletePrice(request, pk):
     price = Price.objects.get(id=pk)
     serializer = PriceSerializer(price, many=False)
     price.delete()
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+# @permission_classes([IsAuthenticated])
+def ListOfDoctor(request):
+    doctor = Doctor.objects.all()
+    serializer = DoctorSerializer(doctor, many=True)
+    return Response(serializer.data) 
+
+@api_view(['POST'])
+# @permission_classes([IsAuthenticated])
+def CreateDoctor(request):
+    serializer = DoctorSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['DELETE'])
+# @permission_classes([IsAuthenticated])
+def DeleteDoctor(request, pk):
+    doctor = Doctor.objects.get(id=pk)
+    serializer = DoctorSerializer(doctor, many=False)
+    doctor.delete()
     return Response(serializer.data)

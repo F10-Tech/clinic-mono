@@ -44,6 +44,11 @@ export default [
     label: 'فئة الاسعار',
     icon: mdiCash ,
   },
+  {
+    to: '/doctors',
+    label: 'الطبيب',
+    icon: mdiAccount ,
+  },
   // {
   //   to: '/clients',
   //   label: 'Clients',

@@ -2,7 +2,7 @@
 import {mdiContentSaveAll, mdiAccountMultiplePlus, mdiMedicalBag} from '@mdi/js';
 import { ref, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { useAgentStore, usePriceStore, useStyleStore, useDiseasesStore, useRegimentStore, useCityStore, usePatientsStore, useStateStore } from '@/stores';
+import { useAgentStore, useDoctorsStore, usePriceStore, useStyleStore, useDiseasesStore, useRegimentStore, useCityStore, usePatientsStore, useStateStore } from '@/stores';
 import type { Patient } from '@/models/patient';
 import SectionMain from '@/vendor/Section/SectionMain.vue';
 import CardBox from '@/vendor/CardBox/CardBox.vue';
@@ -21,6 +21,7 @@ import FormCheckRadioGroup from '@/vendor/Form/FormCheckRadioGroup.vue';
 const agentStore = useAgentStore();
 const router = useRouter();
 const store = usePatientsStore();
+const doctorStore = useDoctorsStore();
 const diseaseStore = useDiseasesStore();
 const regimentStore = useRegimentStore();
 const styleStore = useStyleStore();
@@ -38,6 +39,14 @@ const diseases = ref(
     return {
       value: disease.id,
       label: disease.name,
+    };
+  }),
+);
+const doctor = ref(
+  doctorStore.list.map((doctor) => {
+    return {
+      value: doctor.name,
+      label: doctor.name,
     };
   }),
 );
@@ -197,6 +206,7 @@ const patient = ref<Patient>({
           </FormField>
           <FormField  label="الطبيب" class=" w-[46%]">
             <FormControl
+              :options="doctor"
               v-model="patient.doctor"
               type="text"
               placeholder="المرض الأساسي "

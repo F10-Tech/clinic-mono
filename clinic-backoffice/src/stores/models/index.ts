@@ -10,3 +10,4 @@ export * from './record';
 export * from './orders';
 export * from './days';
 export * from './prices';
+export * from './doctors';

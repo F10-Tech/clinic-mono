@@ -260,6 +260,14 @@ class PriceSerializer(serializers.ModelSerializer):
             model = Price
             fields = '__all__'
 
+
+
+class DoctorSerializer(serializers.ModelSerializer):
+    
+        class Meta:
+            model = Doctor
+            fields = '__all__'
+
 class DaySerializer(serializers.ModelSerializer):
 
     class Meta:

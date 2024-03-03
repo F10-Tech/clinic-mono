@@ -120,7 +120,7 @@ class City(models.Model):
         return self.name
     
 
-class Price ( models.Model ) :
+class Price (models.Model) :
     name = models.CharField(max_length=100, unique=True)
     price = models.FloatField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -132,3 +132,16 @@ class Price ( models.Model ) :
 
     def __str__(self):
         return self.id
+    
+
+class Doctor(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    id = ShortUUIDField(primary_key=True, length=11, max_length=11,blank=False, editable=False)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return self.name

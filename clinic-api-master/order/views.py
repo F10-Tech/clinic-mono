@@ -38,10 +38,34 @@ def Total(request, pk):
 
 @api_view(['POST'])
 def CreateOrder(request):
-    serializer = CreateOrderSerializer(data=request.data)
-    
+    if request.data['amount'] > 0 :
+        serializer = CreateOrderSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            patient = Patient.objects.get(id=request.data['patient'])
+            patient.rest = patient.rest - request.data['amount']
+            patient.save()
+            serializer.save()
+        return Response(serializer.data)
+    return Response(status.HTTP_400_BAD_REQUEST)
+
+@api_view(['DELETE'])
+def DeleteOrder(request, pk):
+    order = Order.objects.get(id=pk)
+    patient = Patient.objects.get(id=order.patient.id)
+    patient.rest = patient.rest + order.amount
+    patient.save()
+    order.delete()
+    return Response('Order deleted')
+
+@api_view(['PATCH'])
+def UpdateOrder(request, pk):
+    order = Order.objects.get(id=pk)
+    patient = Patient.objects.get(id=order.patient.id)
+    patient.rest = patient.rest + order.amount
+    patient.save()
+    serializer = UpdateOrderSerializer(instance=order, data=request.data)
     if serializer.is_valid():
-        patient = Patient.objects.get(id=request.data['patient'])
         patient.rest = patient.rest - request.data['amount']
         patient.save()
         serializer.save()

@@ -7,3 +7,4 @@ export * from './state';
 export * from './order';
 export * from './day';
 export * from './price';
+export * from './doctor';

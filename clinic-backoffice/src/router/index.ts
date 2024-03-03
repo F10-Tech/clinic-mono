@@ -88,6 +88,27 @@ const routes = [
   },
   {
     meta: {
+      title: 'الطبيب',
+      requiresAuth: true,
+    },
+    path: '/doctors',
+    name: 'doctors',
+    component: () => import('@/pages/doctors/doctorPage.vue'),
+    children: [
+      {
+        path: '',
+        name: 'doctors.index',
+        component: () => import('@/pages/doctors/doctorList.vue'),
+      },
+      {
+        path: 'new',
+        name: 'doctors.new',
+        component: () => import('@/pages/doctors/doctorNew.vue'),
+      },
+    ],
+  },
+  {
+    meta: {
       title: 'تسجل الحضور',
       requiresAuth: true,
     },
@@ -130,6 +151,11 @@ const routes = [
         path: 'edit/:id',
         name: 'regiments.edit',
         component: () => import('@/pages/regiments/regimentsEdit.vue'),
+      },
+      {
+        path: 'patients/:id',
+        name: 'regiments.patients',
+        component: () => import('@/pages/regiments/regimentsPatients.vue'),
       },
     ],
   },

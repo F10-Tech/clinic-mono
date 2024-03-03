@@ -1,40 +1,35 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { mdiTextBoxEditOutline, mdiAccount, mdiDeleteForever  } from '@mdi/js';
+import { mdiDeleteForever, mdiWeatherMoonsetDown  } from '@mdi/js';
 import { LoopingRhombusesSpinner } from 'epic-spinners';
-import { format } from 'date-fns';
-import {  usePresenceStore, useAgentStore, usePatientsStore } from '@/stores/models';
-import type { Regiment } from '@/models';
+import { useRoute, useRouter } from 'vue-router';
+import type { Doctor } from '@/models';
 import BaseLevel from '@/vendor/Base/BaseLevel.vue';
 import BaseButtons from '@/vendor/Base/BaseButtons.vue';
 import BaseButton from '@/vendor/Base/BaseButton.vue';
+import {  useDiseasesStore, useAgentStore } from '@/stores/models';
 import CardBoxModal from '@/vendor/CardBox/CardBoxModal.vue';
 
-const store = usePresenceStore();
-const storePatients = usePatientsStore();
+const store = useDiseasesStore();
 const agent = useAgentStore();
 
-function formatDate(value) {
-  if (value) {
-    return format(new Date(value), 'yyyy-MM-dd');
-  }
-}
+
 const props = defineProps({
-  regiments: { type: Array<Regiment>, default: [], required: true },
+  diseases: { type: Array<Doctor>, default: [], required: true },
   isLoading: { type: Boolean, default: false },
 });
 
+// const isArabic = (text) => {
+//   const arabicRegex = /[\u0600-\u06FF]/;
+//   return arabicRegex.test(text);
+// };
 
-const isArabic = (text) => {
-  const arabicRegex = /[\u0600-\u06FF]/;
-  return arabicRegex.test(text);
-};
-
-const items = computed(() => props.regiments);
+const items = computed(() => props.diseases);
 
 const perPage = ref(11);
 
 const currentPage = ref(0);
+
 
 const itemsArrayLength = computed(() => {
   const itemsArray = Object.values(items.value);
@@ -55,14 +50,43 @@ const pagesList = computed(() => {
   return pagesList;
 });
 
+const formStatusWithHeader = ref(true);
+
+const formStatusCurrent = ref(0);
+
+const formStatusOptions = ['info', 'success', 'danger', 'warning'];
+
+const formStatusSubmit = () => {
+  formStatusCurrent.value = formStatusOptions[formStatusCurrent.value + 1]
+    ? formStatusCurrent.value + 1
+    : 0;
+};
+const modalActive = ref(false);
+
+const deleteDisease = async () => {
+  const isDeleted = await store.delete(store.editedId!);
+  if (isDeleted) {
+      // relod page
+      window.location.reload();
+  } else {
+    setTimeout(function () {
+      BackHim();
+    }, agent.timeToKill);
+  }
+};
+
+
+const route = useRoute();
+const router = useRouter();
+
+const BackHim = () => {
+  formStatusCurrent.value = 0;
+};
 
 const selectId = (id: string) => {
   store.editedId = id;
   modalActive.value = true;
 };
-const modalActive = ref(false);
-
-
 </script>
 
 <template>
@@ -70,36 +94,31 @@ const modalActive = ref(false);
     <looping-rhombuses-spinner :animation-duration="1500" :rhombus-size="20" color="#fff" />
   </div>
   <div v-else>
+    <CardBoxModal
+      dir="ltr"
+        v-model="modalActive"
+        title="هل تريد حذف الطبيب؟"
+        button-label="حذف"
+        button-cancel-label="لا"
+        button="danger"
+        has-cancel
+        @confirm="deleteDisease"
+      />
     <table>
       <thead>
         <tr>
-          <th class="text-center">الأسم</th>
-          <th class="text-center">الفترة</th>
-          <th class="text-center">المرضى</th>
+          <th class="text-center text-xl">الطبيب</th>
           <th />
         </tr>
       </thead>
       <tbody>
-        <tr v-for="regiment in regiments" :key="regiment.id">
-          <td data-label="الإسم" class=" text-center">
-            {{ regiment.name }}
-          </td>
-          <td data-label="الفترة" class=" text-center">
-            <div v-if="regiment.period == 'EVENING' ">
-              مسائي
-            </div>  
-            <div v-else-if="regiment.period == 'MORNING' ">
-              صباحي
-            </div>
-          </td>
-          <td>
-            <BaseButtons type="justify-start lg:justify-center" no-wrap>
-              <BaseButton :icon="mdiAccount" label="لإحة المرضى" small :to="'/regiments/patients/' + regiment.id" />
-            </BaseButtons>
+        <tr v-for="disease in diseases" :key="disease.id">
+          <td data-label="المرض" class=" text-center">
+            {{ disease.name }}
           </td>
           <td class="before:hidden lg:w-1 whitespace-nowrap">
             <BaseButtons type="justify-start lg:justify-end" no-wrap>
-              <BaseButton :icon="mdiTextBoxEditOutline" small :to="'/regiments/edit/' + regiment.id" />
+              <BaseButton color="danger" :icon="mdiDeleteForever " small @click="selectId(disease.id)" />
             </BaseButtons>
           </td>
         </tr>
@@ -115,7 +134,6 @@ const modalActive = ref(false);
             :label="page + 1"
             :color="page === currentPage ? 'lightDark' : 'whiteDark'"
             small
-            @click="currentPage = page"
           />
         </BaseButtons>
         <small>Page {{ currentPageHuman }} of {{ numPages }}</small>

@@ -3,14 +3,16 @@ import { computed, ref } from 'vue';
 import { mdiTextBoxEditOutline, mdiPencil, mdiDeleteForever  } from '@mdi/js';
 import { LoopingRhombusesSpinner } from 'epic-spinners';
 import { format } from 'date-fns';
-import {  usePresenceStore, useAgentStore, usePatientsStore } from '@/stores/models';
-import type { Order } from '@/models';
+import {  useOrdersStore, useAgentStore, usePatientsStore } from '@/stores/models';
+import type { Order, Patient } from '@/models';
 import BaseLevel from '@/vendor/Base/BaseLevel.vue';
 import BaseButtons from '@/vendor/Base/BaseButtons.vue';
 import BaseButton from '@/vendor/Base/BaseButton.vue';
 import CardBoxModal from '@/vendor/CardBox/CardBoxModal.vue';
+import FormField from '@/vendor/Form/FormField.vue';
+import FormControl from '@/vendor/Form/FormControl.vue';
 
-const store = usePresenceStore();
+const store = useOrdersStore();
 const storePatients = usePatientsStore();
 const agent = useAgentStore();
 
@@ -55,23 +57,46 @@ const pagesList = computed(() => {
 });
 const order = ref<Order>({
   id: '',
+  amount: 0,
+  patient: {
+    id: '',
+    name: '',
+  },
 } as unknown as Order);
 
 
-const selectId = (id: string) => {
-  store.editedId = id;
-  modalActive.value = true;
+const selectId1 = (id: string, amount: number, patient: Patient) => {
+  order.value.id = id;
+  order.value.amount = amount;
+  order.value.patient = patient;
+  modalActive1.value = true;
 };
-const modalActive = ref(false);
+const selectId2 = (id: string) => {
+  store.editedId = id;
+  modalActive2.value = true;
+};
+const modalActive1 = ref(false);
+const modalActive2 = ref(false);
 
-const deletePresences = async () => {
+const updateOrder = async () => {
+  console.log(order.value);
+  const isDeleted = await store.patch(order.value);
+  if (isDeleted) {
+      // relod page
+      window.location.reload();
+  } else {
+    alert('حدث خطأ أثناء حذف الحضور');
+  }
+};
+
+const deleteOrder = async () => {
   console.log(store.editedId);
   const isDeleted = await store.delete(store.editedId!);
   if (isDeleted) {
       // relod page
       window.location.reload();
   } else {
-    alert('حدث خطأ أثناء حذف الحضور');
+    alert('حدث خطأ أثناء حذف الدفع');
   }
 };
 
@@ -84,13 +109,32 @@ const deletePresences = async () => {
   <div v-else>
 
     <CardBoxModal
-        v-model="modalActive"
-        title="هل تريد حذف المرض؟"
+        v-model="modalActive1"
+        title="دفع المستحقات   "
+        button-label="دفع"
+        button-cancel-label="الغاء"
+        button="success"
+        has-cancel
+        @confirm="updateOrder"
+      >
+      <FormField  label=" المبلغ" class=" ml-3">
+            <FormControl
+              v-model="order.amount"
+              type="number"
+              placeholder="المبلغ المدفوع"
+              :style="{ direction: 'rtl' }"
+            />
+        </FormField>
+    </CardBoxModal>
+
+      <CardBoxModal
+        v-model="modalActive2"
+        title="هل تريد حذف الدفع؟"
         button-label="حذف"
         button-cancel-label="لا"
         button="danger"
         has-cancel
-        @confirm="deletePresences"
+        @confirm="deleteOrder"
       />
     <table>
       <thead>
@@ -98,6 +142,7 @@ const deletePresences = async () => {
           <th class="text-center">الأسم</th>
           <th class="text-center">التاريخ</th>
           <th class="text-center">المبلغ</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -110,6 +155,22 @@ const deletePresences = async () => {
           </td>
           <td data-label="الأسم" class="text-center">
             {{ order.amount }} دج
+          </td>
+          <td>
+            <BaseButton
+              :icon="mdiPencil"
+              @click="selectId1(order.id, order.amount, order.patient)"
+              small
+              primary
+              class="ml-2"
+            />
+            <BaseButton
+              :icon="mdiDeleteForever"
+              color="danger"
+              @click="selectId2(order.id)"
+              small
+              primary
+            />
           </td>
         </tr>
       </tbody>

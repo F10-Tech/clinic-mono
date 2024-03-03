@@ -2,6 +2,7 @@ import type { City } from './city';
 import type { Disease } from './disease';
 import type { Regiment } from './regiment';
 import type { Presence } from './presence';
+// import { Doctor } from './doctor';
 
 export class Patient {
     id!: string;

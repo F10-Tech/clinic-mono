@@ -69,29 +69,15 @@ export const useOrdersStore = defineStore('orders', {
       }
       return true;
     },
-    async patch(id: string, one: Partial<Order>,
-      img_1: File | null = null,
-      img_2: File | null = null,): Promise<Boolean> {
+
+    async patch(one: Partial<Order>): Promise<Boolean> {
       try {
+        console.log(one);
         if (one) {
           const axios = await api.raw();
-          const { data } = await axios.patch(apiUrl + '/patient/'+ id +'/update' , one, {
-            headers: {
-              // 'Content-Type': 'multipart/json',
-              Authorization: `JWT ${agentStore.accessToken}`,
-            },
+          const { data } = await axios.patch(apiUrl + '/order/'+ one.id +'/update' , {
+            'amount': one.amount,
           });
-        }
-        if (img_1) {
-          console.log(img_1);
-          const formData = new FormData();
-          formData.append('img_1', img_1);
-          await this.uploadImage(id, formData);
-        }
-        if (img_2) {
-          const formData = new FormData();
-          formData.append('img_2', img_2);
-          await this.uploadImage(id, formData);
         }
         
         return true;
@@ -117,7 +103,7 @@ export const useOrdersStore = defineStore('orders', {
         return false;
       }
     },
-    async deletePatient(id: string): Promise<boolean> {
+    async delete(id: string): Promise<boolean> {
       try {
         await api.delete(id);
         return true;

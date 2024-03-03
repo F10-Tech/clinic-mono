@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import {mdiContentSaveAll, mdiDelete, mdiClipboardList, mdiMedicalBag, mdiBookEdit, mdiPrinter} from '@mdi/js';
+import {mdiContentSaveAll, mdiPencil, mdiDelete, mdiClipboardList, mdiMedicalBag, mdiBookEdit, mdiPrinter} from '@mdi/js';
 import { LoopingRhombusesSpinner } from 'epic-spinners';
 import { ref, onUnmounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { usePatientsStore, usePriceStore, useCityStore ,useStateStore,  useAgentStore, useStyleStore, useDiseasesStore, useRegimentStore } from '@/stores';
+import { usePatientsStore, useDoctorsStore, usePresenceStore, usePriceStore, useCityStore ,useStateStore,  useAgentStore, useStyleStore, useDiseasesStore, useRegimentStore } from '@/stores';
 import type { Patient } from '@/models/patient';
 import SectionMain from '@/vendor/Section/SectionMain.vue';
 import PillTag from '@/vendor/PillTag/PillTag.vue';
@@ -20,6 +20,7 @@ import SectionTitleLineWithButton from '@/vendor/Section/SectionTitleLineWithBut
 import NotificationBar from '@/vendor/NotificationBar/NotificationBar.vue';
 import { format } from 'date-fns';
 import VueDatePicker from '@vuepic/vue-datepicker';
+import type { Presence } from '@/models';
 
 const store = usePatientsStore();
 const agent = useAgentStore();
@@ -29,6 +30,8 @@ const regimentStore = useRegimentStore();
 const statesStore = useStateStore();
 const cityStore = useCityStore();
 const priceStore = usePriceStore();
+const presenceStore = usePresenceStore();
+const doctorStore = useDoctorsStore();
 
 const formatt = (date) => {
   const day = date.getDate();
@@ -41,6 +44,14 @@ function formatDate(value) {
     return format(new Date(value), 'yyyy-MM-dd');
   }
 }
+const doctor = ref(
+  doctorStore.list.map((doctor) => {
+    return {
+      value: doctor.name,
+      label: doctor.name,
+    };
+  }),
+);
 const states = ref(
   statesStore.list.map((state) => {
     return {
@@ -81,6 +92,22 @@ const prices = ref(
     };
   }),
 );
+
+const presence = ref<Presence>({
+  id: '',
+} as unknown as Presence);
+const createPresence = async (id: string) => {
+  // console.log(id)
+  presence.value.patient = id;
+  const isDeleted = await presenceStore.create(presence.value);
+  if (isDeleted) {
+      // relod page
+      router.push('/patients/');
+  } 
+  else {
+    alert('حدث خطأ أثناء تسجيل الحضور');
+  }
+};
 const search = () => {
   cityStore.localSearch('state');
   cities.value = cityStore.filteredList.map((city) => {
@@ -164,6 +191,7 @@ const img_2 = ref<File | undefined>(undefined);
 
 store.editedId = route.params.id.toString();
 const patient = ref<Patient>({
+  id: store.edited?.id,
   name: store.edited?.name,
   phone: store.edited?.phone,
   age: store.edited?.age,
@@ -360,9 +388,10 @@ const generatePdf = async  () => {
           </FormField>
           <FormField  label="الطبيب" class=" w-[46%]">
             <FormControl
+              :options="doctor"
               v-model="patient.doctor"
-              type="text"
-              placeholder="المرض الأساسي "
+              type="number"
+              placeholder="الطبيب"
               :style="{ direction: 'rtl' }"
             />
           </FormField>
@@ -426,8 +455,11 @@ const generatePdf = async  () => {
           
           <SectionTitleLineWithButton :icon="mdiClipboardList" dir="rtl" title=" الحضور:" >
 
-            <!-- <BaseButton :icon="mdiPrinter" class=" lg:w-[20%] w-full" color="" label="طباعة الحضور" @click="generatePdf" /> -->
+           <BaseButtons type="justify-start lg:justify-end" no-wrap>
+                  <BaseButton label="تسجيل حضور" color="success" :icon="mdiPencil " small @click="createPresence(patient.id)" />
+            </BaseButtons> <!-- <BaseButton :icon="mdiPrinter" class=" lg:w-[20%] w-full" color="" label="طباعة الحضور" @click="generatePdf" /> -->
           </SectionTitleLineWithButton>
+          
           <div class=" ml-4 mb-2 text-xl flex" v-for="one in patient.presence" :key="one.id">
               - <div v-if="one.day == 'Thursday' " class="mx-2">
                       الخميس 
